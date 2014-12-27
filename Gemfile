@@ -36,6 +36,12 @@ gem 'jbuilder', '~> 2.0'
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin]
 
+# HTTP requests
+gem 'typhoeus'
+
+# Background workers
+gem 'sidekiq'
+
 group :development do
   # better IRB and better print
   gem 'pry'
