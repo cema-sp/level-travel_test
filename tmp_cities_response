@@ -1,0 +1,25 @@
+[
+{"id":2,
+"name_ru":"Москва",
+"name_en":"Moscow",
+"active":true,
+"featured":false,
+"iata":"MOW",
+"country":{"id":2,
+  "name_ru":"Россия",
+  "name_en":"Russia",
+  "iso2":"RU",
+  "active":true}},
+{"id":1261,
+"name_ru":"Анапа",
+"name_en":"Anapa",
+"active":true,
+"featured":false,
+"iata":null,
+"country":{
+  "id":2,
+  "name_ru":"Россия",
+  "name_en":"Russia",
+  "iso2":"RU",
+  "active":true}}
+]

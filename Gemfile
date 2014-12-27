@@ -70,6 +70,8 @@ group :development, :test do
   gem 'rspec-expectations', '~> 3.0.0'
   # end
 
+  gem 'webmock'
+
   # colorful output
   gem 'colorize'
   # end

@@ -1,0 +1,34 @@
+<h1>Result for</h1>
+<h2>
+  Period: <%= "#{@start_date} - #{@end_date}" %>,
+  From: <%= @from_city %>,
+  To: <%= @to_country %>
+</h2>
+
+<table>
+  <thead>
+    <tr>
+      <% %w{ Пн Вт Ср Чт Пт Сб Вс }.each do |dow| %>
+        <th><%= dow %></th>
+      <% end %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @table_data.each do |table_row| %>
+      <tr>
+        <% table_row.each do |table_cell| %>
+            <td>
+            <% case table_cell %>
+              <% when Hash %>
+                <strong><%= table_cell.first[0] %></strong>
+                <%= table_cell.first[1].join(', ') %>
+              <% when String %>
+                <strong><%= table_cell %></strong>
+            <% end %>
+            </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
