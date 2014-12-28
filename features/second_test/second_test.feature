@@ -6,9 +6,8 @@ Feature: Second Test
   Scenario: Fill and send countries request
     Given avaliable countries for '2014-12-30' and '7' nights are:
       | Country |  
-      | Turkey  |  
-      | Russia  |  
       | Egypt   |  
+      | Turkey  |  
     When I visit '/second' path
     And I enter 's.a.pisarev@gmail.com' in 'email' field
     And I enter '2014-12-30' in 'date' field

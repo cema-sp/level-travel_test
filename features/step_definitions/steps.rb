@@ -55,18 +55,6 @@ Given(/^It is '(\d+)\-(\d+)\-(\d+)'$/) do |year, month, day|
     ]
     EOF
 
-  @cities_request = 
-    stub_request(:get, 'https://level.travel/papi/references/cities').
-      with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-        'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" }).
-      to_return(status: 200, body: @cities_response)
-
-  @countries_request = 
-    stub_request(:get, 'https://level.travel/papi/references/countries').
-      with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-        'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" }).
-      to_return(status: 200, body: @countries_response)
-
 end
 
 Given(/^nights for '(.*)' are:$/) do |country, table|
@@ -83,6 +71,19 @@ end
 
 When(/^I visit '(.*)' path$/) do |path|
   @params = {}
+
+  @cities_request = 
+    stub_request(:get, 'https://level.travel/papi/references/cities').
+      with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
+        'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" }).
+      to_return(status: 200, body: @cities_response)
+
+  @countries_request = 
+    stub_request(:get, 'https://level.travel/papi/references/countries').
+      with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
+        'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" }).
+      to_return(status: 200, body: @countries_response)
+
   visit path
 end
 
@@ -102,6 +103,7 @@ When(/^I click '(.*)' button$/) do |button_name|
                   'start_date' => @start_date,
                   'end_date' => @end_date}).
       to_return(status: 200, body: @fan_response)
+
   click_link_or_button button_name
 end
 
@@ -156,9 +158,68 @@ Then(/^I see the proper calendar:$/) do |table|
 end
 
 Given(/^avaliable countries for '(.+)' and '(\d+)' nights are:$/) do |date, nights, table|
-  # table is a Cucumber::Ast::Table
+  @available_countries = table.hashes.map { |row| row['Country'] }
   @requested_date = date
+  @requested_date_fan = Date.parse(@requested_date).strftime('%d.%m.%Y')
   @requested_nights = nights
+  ActionMailer::Base.deliveries = []
+
+  @countries_response = <<-EOF
+  [
+    {"id":2,
+    "name_ru":"Russia",
+    "name_en":"Russia",
+    "iso2":"RU",
+    "active":true,
+    "searchable":true},
+    {"id":3,
+    "name_ru":"Egypt",
+    "name_en":"Egypt",
+    "iso2":"EG",
+    "active":true,
+    "searchable":true},
+    {"id":4,
+    "name_ru":"Turkey",
+    "name_en":"Turkey",
+    "iso2":"TR",
+    "active":true,
+    "searchable":true}
+  ]
+  EOF
+
+  @fan_request_ru = 
+    stub_request(:get, 'https://level.travel/papi/search/flights_and_nights').
+      with(
+        headers: { 'Accept' => 'application/vnd.leveltravel.v2',
+                   'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" },
+        query: { 'city_from' => 'Moscow',
+                  'country_to' => 'RU',
+                  'start_date' => @requested_date_fan,
+                  'end_date' => @requested_date_fan}).
+      to_return(status: 200, body: '{"2014-12-30":[5,6]}')
+
+  @fan_request_eg = 
+    stub_request(:get, 'https://level.travel/papi/search/flights_and_nights').
+      with(
+        headers: { 'Accept' => 'application/vnd.leveltravel.v2',
+                   'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" },
+        query: { 'city_from' => 'Moscow',
+                  'country_to' => 'EG',
+                  'start_date' => @requested_date_fan,
+                  'end_date' => @requested_date_fan}).
+      to_return(status: 200, body: '{"2014-12-30":[5,7]}')
+
+  @fan_request_tr = 
+    stub_request(:get, 'https://level.travel/papi/search/flights_and_nights').
+      with(
+        headers: { 'Accept' => 'application/vnd.leveltravel.v2',
+                   'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" },
+        query: { 'city_from' => 'Moscow',
+                  'country_to' => 'TR',
+                  'start_date' => @requested_date_fan,
+                  'end_date' => @requested_date_fan}).
+      to_return(status: 200, body: '{"2014-12-30":[7]}')
+
 end
 
 When(/^I enter '(.+)' in '(.+)' field$/) do |value, field_name|
@@ -174,5 +235,8 @@ Then(/^I see confirmation page$/) do
 end
 
 Then(/^I receive email with proper countries$/) do
-  pending # express the regexp above with the code you wish you had
+  # binding.pry
+  @available_countries.each do |country|
+    expect(ActionMailer::Base.deliveries.last.body.encoded).to match(country)
+  end
 end

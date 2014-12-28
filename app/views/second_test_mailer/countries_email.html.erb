@@ -1,0 +1,12 @@
+<h1>
+  Countries on <%= @date %> 
+  for <%= @nights %> nights
+</h1>
+
+<ul>
+  <% @countries.each do |country| %>
+    <li>
+      <%= country %>
+    </li>
+  <% end %>
+</ul>
