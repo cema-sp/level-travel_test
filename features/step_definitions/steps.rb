@@ -71,8 +71,15 @@ Given(/^It is '(\d+)\-(\d+)\-(\d+)'$/) do |year, month, day|
 end
 
 Given(/^nights for '(.*)' are:$/) do |country, table|
-  # table is a Cucumber::Ast::Table
-  nil # express the regexp above with the code you wish you had
+  require 'Date'
+
+  @fan_response = {}
+  table.hashes.each do |row|
+    @fan_response[Date.parse("2014-12-#{row['Date']}").strftime('%Y-%m-%d')] = 
+      row['Nights'].split(',').map(&:to_i)
+  end
+
+  @fan_response = @fan_response.to_json
 end
 
 When(/^I visit '(.*)' path$/) do |path|
@@ -85,6 +92,16 @@ When(/^I choose '(.*)\,\s(.*)' from '(.*)' dropdown list$/) do |name, value, lis
 end
 
 When(/^I click '(.*)' button$/) do |button_name|
+  @fan_request = 
+    stub_request(:get, 'https://level.travel/papi/search/flights_and_nights').
+      with(
+        headers: { 'Accept' => 'application/vnd.leveltravel.v2',
+                   'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" },
+        query: { 'city_from' => @params[:from_city],
+                  'country_to' => @params[:to_country],
+                  'start_date' => @start_date,
+                  'end_date' => @end_date}).
+      to_return(status: 200, body: @fan_response)
   click_link_or_button button_name
 end
 
@@ -97,15 +114,43 @@ Then(/^I see the proper header$/) do
 end
 
 Then(/^I see the proper calendar:$/) do |table|
-  # table is a Cucumber::Ast::Table
-  # expect(page).to have_content(
-  #   "Period: #{@start_date} - #{@end_date}, 
-  #   From: #{@params[:from_city]}, 
-  #   To: #{@params[:to_country]}"
-  # )
   %w{ Пн Вт Ср Чт Пт Сб Вс }.each do |dow|
     expect(page).to have_selector('table thead th', text: dow)
   end
 
-  expect(page).to have_xpath('//table/tbody/tr/td[0][text()="1"]')
+  # binding.pry
+  table_data = []
+  tmp_row = []
+
+  table.hashes.each do |table_row|
+    %w{ Mo Tu We Th Fr Sa Su }.each do |wday|
+      if parsed = /(\d+)\s\((.*)\)/.match(table_row[wday])
+        tmp_row << { parsed[1] => parsed[2].split(',').map(&:to_i) }
+      else
+        tmp_row << ( table_row[wday].empty? ? nil : table_row[wday] )
+      end
+    end
+    table_data << tmp_row.clone
+    tmp_row.clear
+  end
+
+  table_data.each_with_index do |table_row, row_index|
+    table_row.each_with_index do |table_cell, cell_index|
+      case table_cell
+      when Hash
+        expect(page).to have_xpath(
+          "//table/tbody\
+          /tr[#{row_index + 1}]\
+          /td[#{cell_index + 1}]\
+          [strong/text()=\"#{table_cell.first[0]}\"]\
+          [p/text()=\"#{table_cell.first[1].join(', ')}\"]")
+      when String
+        expect(page).to have_xpath(
+          "//table/tbody\
+          /tr[#{row_index + 1}]\
+          /td[#{cell_index + 1}]\
+          /strong[text()=\"#{table_cell}\"]")
+      end
+    end
+  end
 end

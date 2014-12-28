@@ -39,7 +39,6 @@ RSpec.describe "first_test/show", :type => :view do
     %w{ Пн Вт Ср Чт Пт Сб Вс }.each do |dow|
       should have_selector('table thead th', text: dow)
     end
-  # expect(page).to have_xpath('//table/tbody/tr/td[0][text()="1"]')
   end
 
   it 'has proper table body' do
@@ -50,8 +49,9 @@ RSpec.describe "first_test/show", :type => :view do
           should have_xpath(
             "//table/tbody\
             /tr[#{row_index + 1}]\
-            /td[#{cell_index + 1}][text()=\"#{table_cell.first[1].join(', ')}\"]\
-            /strong[text()=\"#{table_cell.first[0]}\"]")
+            /td[#{cell_index + 1}]\
+            [strong/text()=\"#{table_cell.first[0]}\"]\
+            [p/text()=\"#{table_cell.first[1].join(', ')}\"]")
         when String
           should have_xpath(
             "//table/tbody\

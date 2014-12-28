@@ -17,7 +17,7 @@ Feature: First Test
     And I click 'Show' button
     Then I see the proper header
     And I see the proper calendar:
-      | Mo    | Tu       | Th | Fo        | Fr | Su     | Sa |  
+      | Mo    | Tu       | We | Th        | Fr | Sa     | Su |  
       | 1 (7) | 2 (6,10) | 3  | 4         | 5  | 6 (10) | 7  |  
       | 8     | 9        | 10 | 11 (7, 8) | 12 | 13     | 14 |  
       | 15    | 16       | 17 | 18        | 19 | 20     | 21 |  

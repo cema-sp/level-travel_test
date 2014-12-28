@@ -22,7 +22,7 @@
             <% case table_cell %>
               <% when Hash %>
                 <strong><%= table_cell.first[0] %></strong>
-                <%= table_cell.first[1].join(', ') %>
+                <p><%= table_cell.first[1].join(', ') %></p>
               <% when String %>
                 <strong><%= table_cell %></strong>
             <% end %>

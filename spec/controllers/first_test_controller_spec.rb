@@ -110,10 +110,45 @@ RSpec.describe FirstTestController, type: :controller do
   describe 'POST show' do
     let(:from_city) { 'Moscow' }
     let(:to_country) { 'EG' }
-    let(:current_date) { Time.now.strftime('%-d.%-m.%Y') }
-    let(:offseted_date) { (Time.now + 60 * 60 * 24 * 31).strftime('%-d.%-m.%Y') }
+    # let(:current_date) { Time.now.strftime('%-d.%-m.%Y') }
+    # let(:offseted_date) { (Time.now + 31.day).strftime('%-d.%-m.%Y') }
+    let(:current_date) { Time.mktime(2014,12,01).strftime('%-d.%-m.%Y') }
+    let(:offseted_date) { Time.mktime(2015,01,01).strftime('%-d.%-m.%Y') }
+
+    let!(:fan_response) do
+      <<-EOF
+      {
+      "2014-12-01":[5,8],
+      "2014-12-08":[5,8],
+      "2014-12-15":[5,8],
+      "2014-12-22":[5,8],
+      "2014-12-29":[5,8]
+      }
+      EOF
+    end
+
+    let(:table_data) do
+      [[{'1' => ['5','8']},'2', '3','4','5','6','7'],
+      [{'8' => ['5','8']},'9', '10','11','12','13','14'],
+      [{'15' => ['5','8']},'16', '17','18','19','20','21'],
+      [{'22' => ['5','8']},'23', '24','25','26','27','28'],
+      [{'29' => ['5','8']},'30', '31', '1',nil,nil,nil]]
+    end
+
+    let!(:fan_request) do
+      stub_request(:get, 'https://level.travel/papi/search/flights_and_nights').
+        with(
+          headers: { 'Accept' => 'application/vnd.leveltravel.v2',
+                     'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" },
+          query: { 'city_from' => from_city,
+                    'country_to' => to_country,
+                    'start_date' => current_date,
+                    'end_date' => offseted_date}).
+        to_return(status: 200, body: fan_response)
+    end
 
     before do
+      allow(Time).to receive(:now).and_return(Time.mktime(2014,12,01))
       post :show, from_city: from_city, to_country: to_country
     end
 
@@ -122,6 +157,10 @@ RSpec.describe FirstTestController, type: :controller do
     it { should be_success }
 
     it { should render_template('show') }
+
+    it 'should make request to fetch flights and nights from API' do
+      expect(fan_request).to have_been_requested
+    end
 
     it "assigns provided city as '@from_city'" do
       expect(assigns(:from_city)).to eq(from_city)
@@ -137,6 +176,10 @@ RSpec.describe FirstTestController, type: :controller do
 
     it "assigns offseted date as '@end_date'" do
       expect(assigns(:end_date)).to eq(offseted_date)
+    end
+
+    it "assigns calendar table as '@table_data'" do
+      expect(assigns(:table_data)).to eq(table_data)
     end
   end
 end
