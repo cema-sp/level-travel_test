@@ -124,9 +124,15 @@ RSpec.describe TestWorker do
         to change{ ActionMailer::Base.deliveries.count }.by(1)
     end
 
-    it 'schedules mail delivery with Sidekiq' do
-      Sidekiq::Testing.fake! do
+    describe 'schedules mail delivery with Sidekiq' do
+      around do |example|
+        Sidekiq::Testing.fake!(&example)
+      end
+      before do
+        TestWorker.jobs.clear
         TestWorker.perform_async(email, fan_date, nights)
+      end
+      it 'schedules mail delivery with Sidekiq' do
         expect { TestWorker.drain }.
           to change{ Sidekiq::Extensions::DelayedMailer.jobs.size }.by(1)
       end
