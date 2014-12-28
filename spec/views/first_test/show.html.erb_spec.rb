@@ -1,5 +1,4 @@
 require 'rails_helper'
-# require 'Date'
 
 RSpec.describe "first_test/show", :type => :view do
   let(:start_date) { '1.12.2014' }
