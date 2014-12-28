@@ -17,3 +17,6 @@
 
 # Ignore windows cmd-file link
 cmd.lnk
+
+# Ignore temporary files
+/tmp_*

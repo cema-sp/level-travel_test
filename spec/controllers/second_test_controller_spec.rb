@@ -1,6 +1,5 @@
 require 'rails_helper'
-require 'Date'
-require 'Base64'
+# require 'Base64'
 
 RSpec.describe SecondTestController, :type => :controller do
   describe "GET index" do
