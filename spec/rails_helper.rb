@@ -5,6 +5,7 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'capybara/rails'
 require 'webmock/rspec'
+require 'sidekiq/testing'
 require 'pry'
 
 # require 'Date'

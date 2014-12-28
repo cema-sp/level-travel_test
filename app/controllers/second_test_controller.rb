@@ -1,5 +1,3 @@
-# require "Date"
-
 class SecondTestController < ApplicationController
   def index
   end
@@ -9,36 +7,40 @@ class SecondTestController < ApplicationController
     fan_date = Date.parse(@date).strftime('%d.%m.%Y')
     @nights = send_message_params[:nights]
     @email = send_message_params[:email]
-    @countries = []
-
-    all_countries_response = 
-      level_travel_api_request('references', 'countries').run
-
-    @all_countries = if all_countries_response.success?
-      JSON.parse(all_countries_response.body).map do
-        |el| [el["name_ru"], el["iso2"]]
-      end
-    else
-      []
-    end
-
-    @all_countries.sort_by!{|country| country[0]}
-
-    @all_countries.each do |country_to|
-      country_fan_response = 
-        flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date).run
-
-      # binding.pry
-
-      if country_fan_response.success?
-        row = JSON.parse(country_fan_response.body).first
-        @countries << country_to[0] if row[1].include?(@nights.to_i)
-      end
-    end
 
     # binding.pry
 
-    SecondTestMailer.countries_email(@email, @date, @nights, @countries).deliver
+    TestWorker.perform_async(@email, fan_date, @nights)
+    # TestWorker.level_travel_api_requests_async(@email, fan_date, @nights)
+    # @countries = []
+
+    # all_countries_response = 
+    #   level_travel_api_request('references', 'countries').run
+
+    # @all_countries = if all_countries_response.success?
+    #   JSON.parse(all_countries_response.body).map do
+    #     |el| [el["name_ru"], el["iso2"]]
+    #   end
+    # else
+    #   []
+    # end
+
+    # @all_countries.sort_by!{|country| country[0]}
+
+    # @all_countries.each do |country_to|
+    #   country_fan_response = 
+    #     flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date).run
+
+    #   if country_fan_response.success?
+    #     row = JSON.parse(country_fan_response.body).first
+    #     @countries << country_to[0] if row[1].include?(@nights.to_i)
+    #   end
+    # end
+
+    # binding.pry
+
+    # SecondTestMailer.delay.countries_email(@email, @date, @nights, @countries)
+    # SecondTestMailer.countries_email(@email, @date, @nights, @countries).deliver
   end
 
   private
