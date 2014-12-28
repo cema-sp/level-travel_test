@@ -4,7 +4,6 @@ Given(/^It is '(\d+)\-(\d+)\-(\d+)'$/) do |year, month, day|
   @start_date = Time.now.strftime('%-d.%-m.%Y')
   @end_date = (Time.now + 60 * 60 * 24 * 31).strftime('%-d.%-m.%Y')
 
-  @params = {}
   @cities_response = <<-EOF
     [
       {"id":2,
@@ -83,6 +82,7 @@ Given(/^nights for '(.*)' are:$/) do |country, table|
 end
 
 When(/^I visit '(.*)' path$/) do |path|
+  @params = {}
   visit path
 end
 
@@ -153,4 +153,26 @@ Then(/^I see the proper calendar:$/) do |table|
       end
     end
   end
+end
+
+Given(/^avaliable countries for '(.+)' and '(\d+)' nights are:$/) do |date, nights, table|
+  # table is a Cucumber::Ast::Table
+  @requested_date = date
+  @requested_nights = nights
+end
+
+When(/^I enter '(.+)' in '(.+)' field$/) do |value, field_name|
+  @params[field_name.downcase.to_sym] = value
+  fill_in field_name, with: value
+end
+
+Then(/^I see confirmation page$/) do
+  expect(page).to have_content(
+    "The message with the list of countries \
+    avaliable on #{@requested_date} for #{@requested_nights} nights \
+    have been sent to email: #{@params[:email]}")
+end
+
+Then(/^I receive email with proper countries$/) do
+  pending # express the regexp above with the code you wish you had
 end

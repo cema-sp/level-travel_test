@@ -1,0 +1,14 @@
+<h1>SecondTest</h1>
+
+<%= form_tag second_path do %>
+  <%= label_tag 'email', 'Email' %>
+  <%= email_field_tag 'email', nil %>
+
+  <%= label_tag 'date', 'Date' %>
+  <%= date_field_tag 'date', nil %>
+
+  <%= label_tag 'nights', 'Nights' %>
+  <%= number_field_tag 'nights', nil, in: 1..15, step: 1 %>
+
+  <%= submit_tag 'Search' %>
+<% end %>

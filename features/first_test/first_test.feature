@@ -1,7 +1,7 @@
 Feature: First Test
   In order to get callendar
   As a user
-  I want to get calendar for country
+  I use first test feature
 
   Scenario: Get Calendar
     Given It is '2014-12-1'
