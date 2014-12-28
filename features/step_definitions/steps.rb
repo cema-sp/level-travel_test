@@ -58,7 +58,7 @@ Given(/^It is '(\d+)\-(\d+)\-(\d+)'$/) do |year, month, day|
 end
 
 Given(/^nights for '(.*)' are:$/) do |country, table|
-  require 'Date'
+  # require 'Date'
 
   @fan_response = {}
   table.hashes.each do |row|
