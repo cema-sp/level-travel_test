@@ -59,11 +59,15 @@ RSpec.describe FirstTestController, type: :controller do
     end
 
     let!(:from_cities) do
-      JSON.parse(cities_response).map{ |el| [el["name_ru"], el["name_en"]] }
+      JSON.parse(cities_response).
+        map{ |el| [el["name_ru"], el["name_en"]] }.
+        sort_by!{ |el| el[0] }
     end
 
     let!(:to_countries) do
-      JSON.parse(countries_response).map{ |el| [el["name_ru"], el["iso2"]] }
+      JSON.parse(countries_response).
+        map{ |el| [el["name_ru"], el["iso2"]] }.
+        sort_by!{|el| el[0]}
     end
 
     let!(:cities_request) do
@@ -135,6 +139,8 @@ RSpec.describe FirstTestController, type: :controller do
       [{'29' => ['5','8']},'30', '31', '1',nil,nil,nil]]
     end
 
+    let(:max_nights) { 2 }
+
     let!(:fan_request) do
       stub_request(:get, 'https://level.travel/papi/search/flights_and_nights').
         with(
@@ -180,6 +186,10 @@ RSpec.describe FirstTestController, type: :controller do
 
     it "assigns calendar table as '@table_data'" do
       expect(assigns(:table_data)).to eq(table_data)
+    end
+
+    it "assigns max days count as '@max_days'" do
+      expect(assigns(:max_nights)).to eq(max_nights)
     end
   end
 end

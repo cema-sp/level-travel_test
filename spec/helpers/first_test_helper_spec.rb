@@ -1,15 +1,13 @@
 require 'rails_helper'
 
-# Specs in this file have access to a helper object that includes
-# the FirstTestHelper. For example:
-#
-# describe FirstTestHelper do
-#   describe "string concat" do
-#     it "concats two strings with spaces" do
-#       expect(helper.concat_strings("this","that")).to eq("this that")
-#     end
-#   end
-# end
 RSpec.describe FirstTestHelper, :type => :helper do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe "cell_bg_color(max, value)" do
+    let(:max) { 10 }
+    let(:value) { 4 }
+    let(:color) { 'background-color: rgb(255, 204, 0);' }
+
+    it "should return 'background-color: @color;'" do
+      expect(cell_bg_color(max, value)).to eq(color)
+    end
+  end
 end

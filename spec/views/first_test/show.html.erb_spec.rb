@@ -6,6 +6,7 @@ RSpec.describe "first_test/show", :type => :view do
   let(:end_date) { '31.12.2014' }
   let(:from_city) { 'Moscow' }
   let(:to_country) { 'EG' }
+  let(:max_nights) { 10 }
   let(:table_data) do
     [[{'1' => ['5','8']},'2', '3','4','5','6','7'],
     [{'8' => ['5','8']},'9', '10','11','12','13','14'],
@@ -19,6 +20,7 @@ RSpec.describe "first_test/show", :type => :view do
     assign(:end_date, end_date)
     assign(:from_city, from_city)
     assign(:to_country, to_country)
+    assign(:max_nights, max_nights)
     assign(:table_data, table_data)
     render
   end

@@ -18,15 +18,23 @@
     <% @table_data.each do |table_row| %>
       <tr>
         <% table_row.each do |table_cell| %>
-            <td>
-            <% case table_cell %>
-              <% when Hash %>
-                <strong><%= table_cell.first[0] %></strong>
-                <p><%= table_cell.first[1].join(', ') %></p>
-              <% when String %>
-                <strong><%= table_cell %></strong>
-            <% end %>
-            </td>
+              <% case table_cell %>
+                <% when Hash %>
+                  <%= content_tag :td,
+                    style: cell_bg_color(
+                      @max_nights,
+                      table_cell.first[1].size) do %>
+                    <strong><%= table_cell.first[0] %></strong>
+                    <p><%= table_cell.first[1].join(', ') %></p>
+                  <% end %>
+                <% when String %>
+                  <%= content_tag :td, style: cell_bg_color(@max_nights, 0) do %>
+                    <strong><%= table_cell %></strong>
+                  <% end %>
+                <% else %>
+                  <%= content_tag :td, nil,
+                    style: 'background-color: rgb(200, 200, 200);' %>
+              <% end %>
         <% end %>
       </tr>
     <% end %>

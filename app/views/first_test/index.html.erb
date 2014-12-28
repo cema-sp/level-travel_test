@@ -1,12 +1,10 @@
 <h1>First Test</h1>
 
 <%= form_tag first_path do %>
-  From: 
   <%= label_tag 'from_city', 'From' %>
-  <%= select_tag 'from_city', options_for_select(@from_cities, 'Все'),
-    include_blank: 'Все' %>
+  <%= select_tag 'from_city', options_for_select(@from_cities, 'Moscow'),
+    include_blank: 'Все', disabled: false %>
 
-  To: 
   <%= label_tag 'to_country', 'To' %>
   <%= select_tag 'to_country', options_for_select(@to_countries) %>
   <%= submit_tag 'Show' %>

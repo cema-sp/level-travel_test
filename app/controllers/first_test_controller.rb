@@ -16,6 +16,8 @@ class FirstTestController < ApplicationController
       []
     end
 
+    @from_cities.sort_by!{ |city| city[0] }
+
     @to_countries = if all_countries_response.success?
       JSON.parse(all_countries_response.body).map do
         |el| [el["name_ru"], el["iso2"]]
@@ -23,6 +25,8 @@ class FirstTestController < ApplicationController
     else
       []
     end
+
+    @to_countries.sort_by!{ |country| country[0] }
   end
 
   def show
@@ -30,6 +34,7 @@ class FirstTestController < ApplicationController
     @to_country = show_params[:to_country]
     @start_date = Time.now.strftime('%-d.%-m.%Y')
     @end_date = (Time.now + 60 * 60 * 24 * 31).strftime('%-d.%-m.%Y')
+    @max_nights = 0
 
     fan_response = 
       flights_and_nights_request(@from_city, @to_country, @start_date, @end_date).
@@ -55,6 +60,7 @@ class FirstTestController < ApplicationController
     (start_d..end_d).each do |date|
       if (nights = flights_and_nights[date.strftime('%Y-%m-%d')])
         table_row << { date.day.to_s => nights.map(&:to_s) }
+        @max_nights = [@max_nights, nights.size].max
       else
         table_row << date.day.to_s
       end
