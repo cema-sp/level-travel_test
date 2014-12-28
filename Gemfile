@@ -24,9 +24,6 @@ gem 'jbuilder', '~> 2.0'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
-# Use sqlite3 as the database for Active Record
-gem 'sqlite3'
-  
 # Use unicorn as the app server
 # gem 'unicorn'
 
@@ -78,6 +75,9 @@ group :development, :test do
   # colorful output
   gem 'colorize'
   # end
+
+  # Use sqlite3 as the database for Active Record
+  gem 'sqlite3'
 end
 
 group :test do
@@ -93,7 +93,7 @@ group :test do
   gem 'rake'
 end
 
-# group :production do
-#   gem 'pg'
-#   gem 'rails_12factor'
-# end
+group :production do
+  gem 'pg'
+  gem 'rails_12factor'
+end
