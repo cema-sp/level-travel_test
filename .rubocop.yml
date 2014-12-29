@@ -1,0 +1,21 @@
+require: rubocop-rspec
+AllCops:
+  RunRailsCops: true
+  Exclude:
+    - 'db/schema.rb'
+Documentation:
+  Enabled: false
+Lint/HandleExceptions:
+  Exclude:
+    - 'bin/**/*'
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/views/**/*'
+    - 'spec/features/**/*'
+    - 'spec/routing/**/*'
+RSpec/FilePath:
+  Exclude:
+    - 'spec/routing/**/*'
+Style/RegexpLiteral:
+  Exclude:
+    - 'Guardfile'
