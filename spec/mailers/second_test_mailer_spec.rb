@@ -16,7 +16,7 @@ RSpec.describe SecondTestMailer, :type => :mailer do
 
     it "renders the body" do
       countries.each do |country|
-        expect(countries_email.body.encoded).to match(country)
+        expect(countries_email.text_part.body.decoded).to match(country)
       end
     end
   end

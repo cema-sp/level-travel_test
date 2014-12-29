@@ -58,8 +58,6 @@ Given(/^It is '(\d+)\-(\d+)\-(\d+)'$/) do |year, month, day|
 end
 
 Given(/^nights for '(.*)' are:$/) do |country, table|
-  # require 'Date'
-
   @fan_response = {}
   table.hashes.each do |row|
     @fan_response[Date.parse("2014-12-#{row['Date']}").strftime('%Y-%m-%d')] = 
@@ -108,11 +106,9 @@ When(/^I click '(.*)' button$/) do |button_name|
 end
 
 Then(/^I see the proper header$/) do
-  expect(page).to have_content(
-    "Period: #{@start_date} - #{@end_date}, 
-    From: #{@params[:from_city]}, 
-    To: #{@params[:to_country]}"
-  )
+  expect(page).to have_content("#{@start_date} - #{@end_date}")
+  expect(page).to have_content(@params[:from_city])
+  expect(page).to have_content(@params[:to_country])
 end
 
 Then(/^I see the proper calendar:$/) do |table|
@@ -120,7 +116,6 @@ Then(/^I see the proper calendar:$/) do |table|
     expect(page).to have_selector('table thead th', text: dow)
   end
 
-  # binding.pry
   table_data = []
   tmp_row = []
 
@@ -228,15 +223,22 @@ When(/^I enter '(.+)' in '(.+)' field$/) do |value, field_name|
 end
 
 Then(/^I see confirmation page$/) do
-  expect(page).to have_content(
-    "The message with the list of countries \
-    avaliable on #{@requested_date} for #{@requested_nights} nights \
-    have been sent to email: #{@params[:email]}")
+  expect(page).to have_content(@requested_date)
+  expect(page).to have_content(@requested_nights)
+  expect(page).to have_content(@params[:email])
 end
 
 Then(/^I receive email with proper countries$/) do
-  # binding.pry
   @available_countries.each do |country|
-    expect(ActionMailer::Base.deliveries.last.body.encoded).to match(country)
+    expect(ActionMailer::Base.deliveries.last.text_part.body.decoded).to match(country)
   end
+end
+
+Then(/^I see the proper index page$/) do
+  expect(page).to have_title('For Level-Travel by S. Pisarev')
+  expect(page).to have_selector("a[href=\"mailto:s.a.pisarev@gmail.com\"]")
+end
+
+Then(/^I see '(.+)' link$/) do |link_path|
+  expect(page).to have_selector("a[href=\"#{link_path}\"]")
 end

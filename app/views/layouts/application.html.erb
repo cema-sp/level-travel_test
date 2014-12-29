@@ -1,14 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>LevelTravelTest</title>
+  <title>For Level-Travel by S. Pisarev</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
 <body>
 
-<%= yield %>
+  <div class="ui page grid">
+    <div class="row">
+      <nav class="ui large pointing menu">
+        <div class="header item">
+          <a href="https://github.com/cema-sp">S.A.Pisarev</a>
+        </div>
+        <%= link_to 'Информация', root_path,
+          class: menu_item_class(root_path) %>
+        <%= link_to 'Первое задание', first_path,
+          class: menu_item_class(first_path) %>
+        <%= link_to 'Второе задание', second_path,
+          class: menu_item_class(second_path) %>
+      </nav>
+    </div>
+
+    <div class="ui page grid">
+      <div class="column">
+      
+        <%= yield %>
+      
+      </div>
+    </div>
+
+  </div>
 
 </body>
 </html>

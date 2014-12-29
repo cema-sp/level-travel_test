@@ -102,17 +102,17 @@ RSpec.describe TestWorker do
         end
 
         it "has provided night in 'body'" do
-          expect(ActionMailer::Base.deliveries.last.body.encoded).to match(nights)
+          expect(ActionMailer::Base.deliveries.last.text_part.body.decoded).to match(nights)
         end
 
         it "has provided date in 'body'" do
-          expect(ActionMailer::Base.deliveries.last.body.encoded).to match(fan_date)
+          expect(ActionMailer::Base.deliveries.last.text_part.body.decoded).to match(fan_date)
         end
 
         it "has proper countries in 'body'" do
-          expect(ActionMailer::Base.deliveries.last.body.encoded).
+          expect(ActionMailer::Base.deliveries.last.text_part.body.decoded).
             to match('Egypt')
-          expect(ActionMailer::Base.deliveries.last.body.encoded).
+          expect(ActionMailer::Base.deliveries.last.text_part.body.decoded).
             to match('Turkey')
         end
       end

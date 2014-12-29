@@ -1,14 +1,28 @@
-<h1>SecondTest</h1>
-
-<%= form_tag second_path do %>
-  <%= label_tag 'email', 'Email' %>
-  <%= email_field_tag 'email', nil %>
-
-  <%= label_tag 'date', 'Date' %>
-  <%= date_field_tag 'date', nil %>
-
-  <%= label_tag 'nights', 'Nights' %>
-  <%= number_field_tag 'nights', nil, in: 1..15, step: 1 %>
-
-  <%= submit_tag 'Search' %>
-<% end %>
+<div class="ui grid centered">
+  <div class="six wide column">
+    <h1>Второе задание</h1>
+    <h3>
+      Куда я могу поехать этого числа на это количество ночей?
+    </h3>
+    
+    <%= form_tag second_path, class: 'ui form' do %>
+      <div class="field">
+        <%= label_tag 'email', 'Email' %>
+        <%= email_field_tag 'email', nil %>
+      </div>
+    
+      <div class="field">
+        <%= label_tag 'date', 'Дата' %>
+        <%= date_field_tag 'date', nil %>
+      </div>
+    
+      <div class="field">
+        <%= label_tag 'nights', 'Количество ночей' %>
+        <%= number_field_tag 'nights', nil, in: 1..15, step: 1 %>
+      </div>
+    
+      <%= submit_tag 'Искать', class: 'ui primary button' %>
+    
+    <% end %>
+  </div>
+</div>

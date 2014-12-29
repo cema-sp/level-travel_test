@@ -1,11 +1,14 @@
-<h1>Result for</h1>
+<h1>Таблица туров для</h1>
 <h2>
-  Period: <%= "#{@start_date} - #{@end_date}" %>,
-  From: <%= @from_city %>,
-  To: <%= @to_country %>
+  Периода: <%= "#{@start_date} - #{@end_date}" %>
+</h2>
+<h2>
+  Из города: <%= @from_city %>
+<h2>
+  В страну: <%= @to_country %>
 </h2>
 
-<table>
+<table class="ui table" id="calendar">
   <thead>
     <tr>
       <% %w{ Пн Вт Ср Чт Пт Сб Вс }.each do |dow| %>

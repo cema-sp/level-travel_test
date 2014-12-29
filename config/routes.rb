@@ -1,7 +1,5 @@
 Rails.application.routes.draw do
-  get 'second_test/index'
-
-  root 'first_test#index'
+  root 'welcome#index'
 
   get '/first' => 'first_test#index'
   post '/first' => 'first_test#show'

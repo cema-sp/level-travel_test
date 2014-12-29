@@ -14,7 +14,7 @@ Feature: First Test
     When I visit '/first' path
     And I choose 'Москва, Moscow' from 'from_city' dropdown list
     And I choose 'Египет, EG' from 'to_country' dropdown list
-    And I click 'Show' button
+    And I click 'Показать' button
     Then I see the proper header
     And I see the proper calendar:
       | Mo    | Tu       | We | Th        | Fr | Sa     | Su |  

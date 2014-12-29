@@ -29,11 +29,9 @@ RSpec.describe "first_test/show", :type => :view do
   it { should_not be_nil }
 
   it 'has proper header' do
-    should have_content(
-      "Period: #{start_date} - #{end_date}, 
-      From: #{from_city}, 
-      To: #{to_country}"
-    )
+    should have_content("#{start_date} - #{end_date}")
+    should have_content(from_city)
+    should have_content(to_country)
   end
 
   it 'has proper table header' do

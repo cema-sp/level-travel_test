@@ -14,10 +14,9 @@ RSpec.describe "second_test/send_message", :type => :view do
 
   subject { rendered }
 
-  it do
-    should have_content(
-      "The message with the list of countries \
-      avaliable on #{date} for #{nights} nights \
-      have been sent to email: #{email}")
+  it 'has proper content' do
+    should have_content(date)
+    should have_content(nights)
+    should have_content(email)
   end
 end

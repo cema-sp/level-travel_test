@@ -15,5 +15,5 @@ RSpec.describe 'second_test/index', type: :view do
 
   it { should have_selector("form[method=\"post\"][action=\"#{second_path}\"]") }
 
-  it { should have_selector("input[type=\"submit\"][value=\"Search\"]") }
+  it { should have_selector("input[type=\"submit\"][value=\"Искать\"]") }
 end
