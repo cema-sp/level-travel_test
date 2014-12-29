@@ -18,15 +18,29 @@ class TestWorker
 
     all_countries.sort_by! { |country| country[0] }
 
-    all_countries.each do |country_to|
-      country_fan_response =
-        flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date).run
+    hydra = Typhoeus::Hydra.hydra
+    requests = []
 
-      if country_fan_response.success?
-        row = JSON.parse(country_fan_response.body).first
-        countries << country_to[0] if row[1].include?(nights.to_i)
+    all_countries.each do |country_to|
+      request = 
+        flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date)
+      
+      requests << [country_to[0], request]
+
+      hydra.queue(request)
+    end
+
+    hydra.run
+
+    requests.each do |country_request|
+      if country_request[1].response.success?
+        row = JSON.parse(country_request[1].response.body).first
+        countries << country_request[0] if row[1].include?(nights.to_i)
       end
     end
+
+      # country_fan_response =
+      #   flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date).run
 
     SecondTestMailer.delay.countries_email(email, fan_date, nights, countries)
     # SecondTestMailer.countries_email(email, fan_date, nights, countries).deliver
