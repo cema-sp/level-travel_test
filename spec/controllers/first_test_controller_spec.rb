@@ -59,29 +59,29 @@ RSpec.describe FirstTestController, type: :controller do
     end
 
     let!(:from_cities) do
-      JSON.parse(cities_response).
-        map{ |el| [el["name_ru"], el["name_en"]] }.
-        sort_by!{ |el| el[0] }
+      JSON.parse(cities_response)
+        .map { |el| [el['name_ru'], el['name_en']] }
+        .sort_by! { |el| el[0] }
     end
 
     let!(:to_countries) do
-      JSON.parse(countries_response).
-        map{ |el| [el["name_ru"], el["iso2"]] }.
-        sort_by!{|el| el[0]}
+      JSON.parse(countries_response)
+        .map { |el| [el['name_ru'], el['iso2']] }
+        .sort_by! { |el| el[0] }
     end
 
     let!(:cities_request) do
-      stub_request(:get, 'https://level.travel/papi/references/cities').
-        with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-          'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" }).
-        to_return(status: 200, body: cities_response)
+      stub_request(:get, 'https://level.travel/papi/references/cities')
+        .with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
+                         'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" })
+        .to_return(status: 200, body: cities_response)
     end
 
     let!(:countries_request) do
-      stub_request(:get, 'https://level.travel/papi/references/countries').
-        with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-          'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" }).
-        to_return(status: 200, body: countries_response)
+      stub_request(:get, 'https://level.travel/papi/references/countries')
+        .with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
+                         'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" })
+        .to_return(status: 200, body: countries_response)
     end
 
     before do
@@ -94,11 +94,11 @@ RSpec.describe FirstTestController, type: :controller do
 
     it { should render_template('index') }
 
-    it 'should make request to fetch all cities from API' do
+    it 'makes request to fetch all cities from API' do
       expect(cities_request).to have_been_requested
     end
 
-    it 'should make request to fetch all countries from API' do
+    it 'makes request to fetch all countries from API' do
       expect(countries_request).to have_been_requested
     end
 
@@ -116,8 +116,8 @@ RSpec.describe FirstTestController, type: :controller do
     let(:to_country) { 'EG' }
     # let(:current_date) { Time.now.strftime('%-d.%-m.%Y') }
     # let(:offseted_date) { (Time.now + 31.day).strftime('%-d.%-m.%Y') }
-    let(:current_date) { Time.mktime(2014,12,01).strftime('%-d.%-m.%Y') }
-    let(:offseted_date) { Time.mktime(2015,01,01).strftime('%-d.%-m.%Y') }
+    let(:current_date) { Time.mktime(2014, 12, 01).strftime('%-d.%-m.%Y') }
+    let(:offseted_date) { Time.mktime(2015, 01, 01).strftime('%-d.%-m.%Y') }
 
     let!(:fan_response) do
       <<-EOF
@@ -132,29 +132,29 @@ RSpec.describe FirstTestController, type: :controller do
     end
 
     let(:table_data) do
-      [[{'1' => ['5','8']},'2', '3','4','5','6','7'],
-      [{'8' => ['5','8']},'9', '10','11','12','13','14'],
-      [{'15' => ['5','8']},'16', '17','18','19','20','21'],
-      [{'22' => ['5','8']},'23', '24','25','26','27','28'],
-      [{'29' => ['5','8']},'30', '31', '1',nil,nil,nil]]
+      [[{ '1' => %w(5 8) }, '2', '3', '4', '5', '6', '7'],
+       [{ '8' => %w(5 8) }, '9', '10', '11', '12', '13', '14'],
+       [{ '15' => %w(5 8) }, '16', '17', '18', '19', '20', '21'],
+       [{ '22' => %w(5 8) }, '23', '24', '25', '26', '27', '28'],
+       [{ '29' => %w(5 8) }, '30', '31', '1', nil, nil, nil]]
     end
 
     let(:max_nights) { 2 }
 
     let!(:fan_request) do
-      stub_request(:get, 'https://level.travel/papi/search/flights_and_nights').
-        with(
+      stub_request(:get, 'https://level.travel/papi/search/flights_and_nights')
+        .with(
           headers: { 'Accept' => 'application/vnd.leveltravel.v2',
                      'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" },
           query: { 'city_from' => from_city,
-                    'country_to' => to_country,
-                    'start_date' => current_date,
-                    'end_date' => offseted_date}).
-        to_return(status: 200, body: fan_response)
+                   'country_to' => to_country,
+                   'start_date' => current_date,
+                   'end_date' => offseted_date })
+        .to_return(status: 200, body: fan_response)
     end
 
     before do
-      allow(Time).to receive(:now).and_return(Time.mktime(2014,12,01))
+      allow(Time).to receive(:now).and_return(Time.mktime(2014, 12, 01))
       post :show, from_city: from_city, to_country: to_country
     end
 
@@ -164,7 +164,7 @@ RSpec.describe FirstTestController, type: :controller do
 
     it { should render_template('show') }
 
-    it 'should make request to fetch flights and nights from API' do
+    it 'makes request to fetch flights and nights from API' do
       expect(fan_request).to have_been_requested
     end
 

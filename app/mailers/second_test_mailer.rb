@@ -1,5 +1,5 @@
 class SecondTestMailer < ActionMailer::Base
-  default from: "s.a.pisarev@gmail.com"
+  default from: 's.a.pisarev@gmail.com'
 
   def countries_email(email, date, nights, countries)
     @email, @date, @nights, @countries = email, date, nights, countries

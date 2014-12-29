@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "second_test/send_message", :type => :view do
+RSpec.describe 'second_test/send_message', type: :view do
   let(:date) { '2014-12-30' }
   let(:nights) { '7' }
   let(:email) { 's.a.pisarev@gmail.com' }

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'welcome/index', :type => :view do
+RSpec.describe 'welcome/index', type: :view do
   before { render }
 
   subject { rendered }

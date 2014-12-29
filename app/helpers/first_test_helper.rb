@@ -12,6 +12,6 @@ module FirstTestHelper
     else
       g = 255
     end
-    "background-color: rgb(#{r.round}, #{g.round}, #{b});"      
+    "background-color: rgb(#{r.round}, #{g.round}, #{b});"
   end
 end

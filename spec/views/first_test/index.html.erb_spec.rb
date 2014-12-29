@@ -2,20 +2,20 @@ require 'rails_helper'
 
 RSpec.describe 'first_test/index', type: :view do
   let(:from_cities) do
-    [['Москва','Moscow'],
-    ['Кингстон', 'Kingston'],
-    ['Пало Альто', 'Palo Alto']]
+    [%w(Москва Moscow),
+     %w(Кингстон Kingston),
+     ['Пало Альто', 'Palo Alto']]
   end
 
-  let(:from_cities_options) { from_cities.map{ |el| el[0] } }
+  let(:from_cities_options) { from_cities.map { |el| el[0] } }
 
   let(:to_countries) do
-    [['Россия', 'RU'],
-    ['Ямайка', 'JM'],
-    ['США', 'US']]
+    [%w(Россия RU),
+     %w(Ямайка JM),
+     %w(США US)]
   end
 
-  let(:to_countries_options) { to_countries.map{ |el| el[0] } }
+  let(:to_countries_options) { to_countries.map { |el| el[0] } }
 
   before do
     assign(:from_cities, from_cities)

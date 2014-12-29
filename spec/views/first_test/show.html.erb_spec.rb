@@ -1,17 +1,17 @@
 require 'rails_helper'
 
-RSpec.describe "first_test/show", :type => :view do
+RSpec.describe 'first_test/show', type: :view do
   let(:start_date) { '1.12.2014' }
   let(:end_date) { '31.12.2014' }
   let(:from_city) { 'Moscow' }
   let(:to_country) { 'EG' }
   let(:max_nights) { 10 }
   let(:table_data) do
-    [[{'1' => ['5','8']},'2', '3','4','5','6','7'],
-    [{'8' => ['5','8']},'9', '10','11','12','13','14'],
-    [{'15' => ['5','8']},'16', '17','18','19','20','21'],
-    [{'22' => ['5','8']},'23', '24','25','26','27','28'],
-    [{'29' => ['5','8']},'30', '31',nil,nil,nil,nil]]
+    [[{ '1' => %w(5 8) }, '2', '3', '4', '5', '6', '7'],
+     [{ '8' => %w(5 8) }, '9', '10', '11', '12', '13', '14'],
+     [{ '15' => %w(5 8) }, '16', '17', '18', '19', '20', '21'],
+     [{ '22' => %w(5 8) }, '23', '24', '25', '26', '27', '28'],
+     [{ '29' => %w(5 8) }, '30', '31', nil, nil, nil, nil]]
   end
 
   before do
@@ -35,7 +35,7 @@ RSpec.describe "first_test/show", :type => :view do
   end
 
   it 'has proper table header' do
-    %w{ Пн Вт Ср Чт Пт Сб Вс }.each do |dow|
+    %w(Пн Вт Ср Чт Пт Сб Вс).each do |dow|
       should have_selector('table thead th', text: dow)
     end
   end

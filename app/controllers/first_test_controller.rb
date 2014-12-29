@@ -2,31 +2,31 @@
 
 class FirstTestController < ApplicationController
   def index
-    all_cities_response = 
+    all_cities_response =
       level_travel_api_request('references', 'cities').run
 
-    all_countries_response = 
+    all_countries_response =
       level_travel_api_request('references', 'countries').run
 
     @from_cities = if all_cities_response.success?
-      JSON.parse(all_cities_response.body).map do
-        |el| [el["name_ru"], el["name_en"]]
-      end
-    else
-      []
+                     JSON.parse(all_cities_response.body).map do
+                       |el| [el['name_ru'], el['name_en']]
+                     end
+                   else
+                     []
     end
 
-    @from_cities.sort_by!{ |city| city[0] }
+    @from_cities.sort_by! { |city| city[0] }
 
     @to_countries = if all_countries_response.success?
-      JSON.parse(all_countries_response.body).map do
-        |el| [el["name_ru"], el["iso2"]]
-      end
-    else
-      []
+                      JSON.parse(all_countries_response.body).map do
+                        |el| [el['name_ru'], el['iso2']]
+                      end
+                    else
+                      []
     end
 
-    @to_countries.sort_by!{ |country| country[0] }
+    @to_countries.sort_by! { |country| country[0] }
   end
 
   def show
@@ -36,14 +36,14 @@ class FirstTestController < ApplicationController
     @end_date = (Time.now + 60 * 60 * 24 * 31).strftime('%-d.%-m.%Y')
     @max_nights = 0
 
-    fan_response = 
-      flights_and_nights_request(@from_city, @to_country, @start_date, @end_date).
-        run
+    fan_response =
+      flights_and_nights_request(@from_city, @to_country, @start_date, @end_date)
+      .run
 
     flights_and_nights = if fan_response.success?
-      JSON.parse(fan_response.body)
-    else
-      {}
+                           JSON.parse(fan_response.body)
+                         else
+                           {}
     end
 
     start_d = Date.parse(@start_date)
@@ -56,7 +56,7 @@ class FirstTestController < ApplicationController
 
     # For previous days
     (start_d.cwday - 1).times { table_row << nil }
-    # For 
+    # For
     (start_d..end_d).each do |date|
       if (nights = flights_and_nights[date.strftime('%Y-%m-%d')])
         table_row << { date.day.to_s => nights.map(&:to_s) }
@@ -74,7 +74,7 @@ class FirstTestController < ApplicationController
     unless table_row.empty?
       (7 - table_row.size).times { table_row << nil }
       @table_data << table_row
-    end 
+    end
   end
 
   private
@@ -82,7 +82,7 @@ class FirstTestController < ApplicationController
   def flights_and_nights_request(city_from, country_to, start_date, end_date)
     level_travel_api_request(
       'search',
-      'flights_and_nights', 
+      'flights_and_nights',
       'city_from' => city_from,
       'country_to' => country_to,
       'start_date' => start_date,
@@ -99,7 +99,7 @@ class FirstTestController < ApplicationController
       headers: {
         'Accept' => 'application/vnd.leveltravel.v2',
         'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\""
-      }, 
+      },
       params: options
     )
   end

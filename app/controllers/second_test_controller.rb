@@ -14,7 +14,7 @@ class SecondTestController < ApplicationController
     # TestWorker.level_travel_api_requests_async(@email, fan_date, @nights)
     # @countries = []
 
-    # all_countries_response = 
+    # all_countries_response =
     #   level_travel_api_request('references', 'countries').run
 
     # @all_countries = if all_countries_response.success?
@@ -28,7 +28,7 @@ class SecondTestController < ApplicationController
     # @all_countries.sort_by!{|country| country[0]}
 
     # @all_countries.each do |country_to|
-    #   country_fan_response = 
+    #   country_fan_response =
     #     flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date).run
 
     #   if country_fan_response.success?
@@ -48,7 +48,7 @@ class SecondTestController < ApplicationController
   def flights_and_nights_request(city_from, country_to, start_date, end_date)
     level_travel_api_request(
       'search',
-      'flights_and_nights', 
+      'flights_and_nights',
       'city_from' => city_from,
       'country_to' => country_to,
       'start_date' => start_date,
@@ -64,7 +64,7 @@ class SecondTestController < ApplicationController
       headers: {
         'Accept' => 'application/vnd.leveltravel.v2',
         'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\""
-      }, 
+      },
       params: options
     )
   end
