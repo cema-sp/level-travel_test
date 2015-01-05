@@ -1,85 +1,40 @@
+World(LevelTravelApiHelper)
+
 Given(/^It is '(\d+)\-(\d+)\-(\d+)'$/) do |year, month, day|
-  allow(Time).to receive(:now).and_return(Time.mktime(year, month, day))
+  allow(Date)
+    .to receive(:today)
+    .and_return(Date.parse("#{year}-#{month}-#{day}"))
 
-  @start_date = Time.now.strftime('%-d.%-m.%Y')
-  @end_date = (Time.now + 60 * 60 * 24 * 31).strftime('%-d.%-m.%Y')
-
-  @cities_response = <<-EOF
-    [
-      {"id":2,
-      "name_ru":"Москва",
-      "name_en":"Moscow",
-      "active":true,
-      "featured":false,
-      "iata":"MOW",
-      "country":{"id":2,
-        "name_ru":"Россия",
-        "name_en":"Russia",
-        "iso2":"RU",
-        "active":true}},
-      {"id":1261,
-      "name_ru":"Анапа",
-      "name_en":"Anapa",
-      "active":true,
-      "featured":false,
-      "iata":null,
-      "country":{
-        "id":2,
-        "name_ru":"Россия",
-        "name_en":"Russia",
-        "iso2":"RU",
-        "active":true}}
-    ]
-    EOF
-
-  @countries_response = <<-EOF
-    [
-      {"id":2,
-      "name_ru":"Россия",
-      "name_en":"Russia",
-      "iso2":"RU",
-      "active":true,
-      "searchable":true},
-      {"id":3,
-      "name_ru":"Египет",
-      "name_en":"Egypt",
-      "iso2":"EG",
-      "active":true,
-      "searchable":true},
-      {"id":4,
-      "name_ru":"Турция",
-      "name_en":"Turkey",
-      "iso2":"TR",
-      "active":true,
-      "searchable":true}
-    ]
-    EOF
+  @start_date = Date.today.strftime('%-d.%-m.%Y')
+  @end_date = (Date.today + 31).strftime('%-d.%-m.%Y')
 end
 
-Given(/^nights for '(.*)' are:$/) do |_country, table|
-  @fan_response = {}
+Given(/body of '(.+)' response from fixture '(.+)'/) do |response, fixture|
+  instance_variable_set("@#{response}_response",
+    Typhoeus::Response.new(
+      code: 200,
+      body: yaml_fixture(fixture)[response]))
+
+  instance_variable_set("@#{response}_request",
+    stub_typhoeus_request(
+      level_travel_api_request('references', response),
+      instance_variable_get("@#{response}_response")))
+end
+
+Given(/^nights for selected country in f&n API response are:$/) do |table|
+  fan_response_body_hash = {}
   table.hashes.each do |row|
-    @fan_response[Date.parse("2014-12-#{row['Date']}").strftime('%Y-%m-%d')] =
+    fan_response_body_hash[row['Date']] =
       row['Nights'].split(',').map(&:to_i)
   end
 
-  @fan_response = @fan_response.to_json
+  @fan_response = 
+    Typhoeus::Response.new(code: 200, body: fan_response_body_hash.to_json)
+
 end
 
 When(/^I visit '(.*)' path$/) do |path|
   @params = {}
-
-  @cities_request =
-    stub_request(:get, 'https://level.travel/papi/references/cities')
-    .with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-                     'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" })
-    .to_return(status: 200, body: @cities_response)
-
-  @countries_request =
-    stub_request(:get, 'https://level.travel/papi/references/countries')
-    .with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-                     'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" })
-    .to_return(status: 200, body: @countries_response)
 
   visit path
 end
@@ -90,30 +45,28 @@ When(/^I choose '(.*)\,\s(.*)' from '(.*)' dropdown list$/) do |name, value, lis
 end
 
 When(/^I click '(.*)' button$/) do |button_name|
-  @fan_request =
-    stub_request(:get, 'https://level.travel/papi/search/flights_and_nights')
-    .with(
-        headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-                   'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" },
-        query: { 'city_from' => @params[:from_city],
-                 'country_to' => @params[:to_country],
-                 'start_date' => @start_date,
-                 'end_date' => @end_date })
-    .to_return(status: 200, body: @fan_response)
+  if button_name == 'Показать'
+    @fan_request =
+      stub_typhoeus_request(
+        flights_and_nights_request(
+          @params[:from_city],
+          @params[:to_country],
+          @start_date,
+          @end_date),
+        @fan_response)
+  end
 
   click_link_or_button button_name
 end
 
-Then(/^I see the proper header$/) do
+Then(/^I see the proper info$/) do
   expect(page).to have_content("#{@start_date} - #{@end_date}")
   expect(page).to have_content(@params[:from_city])
   expect(page).to have_content(@params[:to_country])
 end
 
-Then(/^I see the proper calendar:$/) do |table|
-  %w(Пн Вт Ср Чт Пт Сб Вс).each do |dow|
-    expect(page).to have_selector('table thead th', text: dow)
-  end
+Then(/^I see the proper calendar table:$/) do |table|
+  step 'with proper thead'
 
   table_data = []
   tmp_row = []
@@ -151,6 +104,12 @@ Then(/^I see the proper calendar:$/) do |table|
   end
 end
 
+Then(/with proper thead/) do
+  %w(Пн Вт Ср Чт Пт Сб Вс).each do |dow|
+    expect(page).to have_selector('table thead th', text: dow)
+  end
+end
+
 Given(/^avaliable countries for '(.+)' and '(\d+)' nights are:$/) do |date, nights, table|
   @available_countries = table.hashes.map { |row| row['Country'] }
   @requested_date = date
@@ -158,28 +117,28 @@ Given(/^avaliable countries for '(.+)' and '(\d+)' nights are:$/) do |date, nigh
   @requested_nights = nights
   ActionMailer::Base.deliveries = []
 
-  @countries_response = <<-EOF
-  [
-    {"id":2,
-    "name_ru":"Russia",
-    "name_en":"Russia",
-    "iso2":"RU",
-    "active":true,
-    "searchable":true},
-    {"id":3,
-    "name_ru":"Egypt",
-    "name_en":"Egypt",
-    "iso2":"EG",
-    "active":true,
-    "searchable":true},
-    {"id":4,
-    "name_ru":"Turkey",
-    "name_en":"Turkey",
-    "iso2":"TR",
-    "active":true,
-    "searchable":true}
-  ]
-  EOF
+  # @countries_response = <<-EOF
+  # [
+  #   {"id":2,
+  #   "name_ru":"Russia",
+  #   "name_en":"Russia",
+  #   "iso2":"RU",
+  #   "active":true,
+  #   "searchable":true},
+  #   {"id":3,
+  #   "name_ru":"Egypt",
+  #   "name_en":"Egypt",
+  #   "iso2":"EG",
+  #   "active":true,
+  #   "searchable":true},
+  #   {"id":4,
+  #   "name_ru":"Turkey",
+  #   "name_en":"Turkey",
+  #   "iso2":"TR",
+  #   "active":true,
+  #   "searchable":true}
+  # ]
+  # EOF
 
   @fan_request_ru =
     stub_request(:get, 'https://level.travel/papi/search/flights_and_nights')

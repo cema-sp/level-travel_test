@@ -8,38 +8,4 @@
   В страну: <%= @to_country %>
 </h2>
 
-<table class="ui seven column table" id="calendar">
-  <thead>
-    <tr>
-      <% %w{ Пн Вт Ср Чт Пт Сб Вс }.each do |dow| %>
-        <th><%= dow %></th>
-      <% end %>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @table_data.each do |table_row| %>
-      <tr>
-        <% table_row.each do |table_cell| %>
-              <% case table_cell %>
-                <% when Hash %>
-                  <%= content_tag :td,
-                    style: cell_bg_color(
-                      @max_nights,
-                      table_cell.first[1].size) do %>
-                    <strong><%= table_cell.first[0] %></strong>
-                    <p><%= table_cell.first[1].join(', ') %></p>
-                  <% end %>
-                <% when String %>
-                  <%= content_tag :td, style: cell_bg_color(@max_nights, 0) do %>
-                    <strong><%= table_cell %></strong>
-                  <% end %>
-                <% else %>
-                  <%= content_tag :td, nil,
-                    style: 'background-color: rgb(200, 200, 200);' %>
-              <% end %>
-        <% end %>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<%= flights_and_nights_calendar(@start_date, @end_date, @fan_hash) %>

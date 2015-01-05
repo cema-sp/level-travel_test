@@ -1,6 +1,8 @@
 module FirstTestHelper
   def flights_and_nights_calendar(start_date, end_date, fan_hash)
     days_of_week = %w{ Пн Вт Ср Чт Пт Сб Вс }
+    start_date = Date.parse(start_date) unless start_date.instance_of?(Date)
+    end_date = Date.parse(end_date) unless end_date.instance_of?(Date)
 
     thead = 
       content_tag :thead do
