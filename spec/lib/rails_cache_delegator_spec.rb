@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe RailsCacheDelegator do
   let(:request) { Typhoeus::Request.new('example.com') }
-  let(:response) { Typhoeus::Response.new(body: 'test data from www.example.com') }
+  let(:response) { Typhoeus::Response.new(body: 'test data') }
   let(:rails_cache_delegator) { described_class.new(Rails.cache) }
 
   describe '#set(request, response)' do

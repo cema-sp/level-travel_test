@@ -49,7 +49,8 @@ RSpec.describe FirstTestHelper, type: :helper do
 
         it 'has empty cells for next days' do
           (end_date.cwday.next..7).each do |n|
-            should have_xpath("//tbody/tr[last()]/td[#{n}]/strong[text()=\" \"]")
+            should have_xpath(
+              "//tbody/tr[last()]/td[#{n}]/strong[text()=\" \"]")
           end
         end
       end

@@ -12,19 +12,16 @@ class FirstTestController < ApplicationController
     hydra.run
 
     @from_cities, @to_countries = [], []
+    
+    @from_cities =
+      parse_json_references_response(
+        all_cities_request.response,
+        'name_ru', 'name_en') if all_cities_request.response.success?
 
-    if all_cities_request.response.success?
-      @from_cities =
-        parse_json_references_response(
-          all_cities_request.response,
-          'name_ru', 'name_en')
-    end
-
-    if all_countries_request.response.success?
-      @to_countries =
-        parse_json_references_response(
-          all_countries_request.response,
-          'name_ru', 'iso2')
+    @to_countries =
+      parse_json_references_response(
+        all_countries_request.response,
+        'name_ru', 'iso2') if all_countries_request.response.success?
     end
   end
 

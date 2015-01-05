@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'Routing', type: :routing do
+RSpec.describe 'Routing', type: :routing do  # rubocop:disable all
   it { expect(get: '/').to route_to('welcome#index') }
   it { expect(get: '/first').to route_to('first_test#index') }
   it { expect(post: '/first').to route_to('first_test#show') }

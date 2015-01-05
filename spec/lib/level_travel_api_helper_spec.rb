@@ -23,11 +23,13 @@ RSpec.describe LevelTravelApiHelper do
       its([:params]) { should eq(options) }
 
       its([:headers]) do
-        should include('Accept' => 'application/vnd.leveltravel.v2')
+        should include(
+          'Accept' => 'application/vnd.leveltravel.v2')
       end
 
       its([:headers]) do
-        should include('Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"")
+        should include(
+          'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"")
       end
     end
   end

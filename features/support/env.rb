@@ -20,10 +20,12 @@ Dir[
 # where an error page will
 # be rendered instead.
 #
-# Sometimes we want to override this default behaviour and allow Rails to rescue
+# Sometimes we want to override this default behaviour
+# and allow Rails to rescue
 # exceptions and display an error page (just like when the
 # app is running in production).
-# Typical scenarios where you want to do this is when you test your error pages.
+# Typical scenarios where you want to do this is when
+# you test your error pages.
 # There are two ways to allow Rails to rescue exceptions:
 #
 # 1) Tag your scenario (or feature) with @allow-rescue
@@ -55,7 +57,8 @@ end
 #     DatabaseCleaner.strategy = :truncation
 #   end
 #
-#   Before('~@no-txn', '~@selenium', '~@culerity', '~@celerity', '~@javascript') do
+#   Before('~@no-txn', '~@selenium', '~@culerity', '~@celerity',
+#     '~@javascript') do
 #     DatabaseCleaner.strategy = :transaction
 #   end
 #

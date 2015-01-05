@@ -38,7 +38,9 @@ When(/^I visit '(.*)' path$/) do |path|
   visit path
 end
 
-When(/^I choose '(.*)\,\s(.*)' from '(.*)' dropdown list$/) do |name, value, list_name|
+When(/^I choose '(.*)\,\s(.*)' from '(.*)' dropdown list$/) do 
+  |name, value, list_name|
+
   @params[list_name.downcase.to_sym] = value
   select name, from: list_name
 end
@@ -70,7 +72,7 @@ Then(/^I see the proper calendar table:$/) do |table|
 
   table.hashes.each do |table_row|
     %w(Mo Tu We Th Fr Sa Su).each do |wday|
-      if parsed = /(\d+)\s\((.*)\)/.match(table_row[wday])
+      if (parsed = /(\d+)\s\((.*)\)/.match(table_row[wday]))
         tmp_row << { parsed[1] => parsed[2].split(',').map(&:to_i) }
       else
         tmp_row << (table_row[wday].empty? ? nil : table_row[wday])
@@ -112,7 +114,9 @@ Then(/with proper tbody/) do
   end
 end
 
-Given(/^avaliable countries for '(.+)' and '(\d+)' nights are:$/) do |date, nights, table|
+Given(/^avaliable countries for '(.+)' and '(\d+)' nights are:$/) do
+  |date, nights, table|
+
   @available_countries = table.hashes.map { |row| row['Country'] }
   @requested_date = date
   @requested_date_fan = Date.parse(@requested_date).strftime('%d.%m.%Y')
@@ -189,7 +193,8 @@ end
 
 Then(/^I receive email with proper countries$/) do
   @available_countries.each do |country|
-    expect(ActionMailer::Base.deliveries.last.text_part.body.decoded).to match(country)
+    expect(ActionMailer::Base.deliveries.last.text_part.body.decoded).
+      to match(country)
   end
 end
 
