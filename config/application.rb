@@ -23,5 +23,7 @@ module LevelTravelTest
     config.generators do |generator|
       generator.test_framework :rspec, request_specs: false
     end
+
+    config.autoload_paths << Rails.root.join('lib').to_s
   end
 end

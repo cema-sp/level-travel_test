@@ -1,5 +1,5 @@
 module ApplicationHelper
   def menu_item_class(path)
-    current_page?(path) ? 'item active' : 'item'
+    (request.path == path) ? 'item active' : 'item'
   end
 end

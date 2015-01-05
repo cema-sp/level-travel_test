@@ -1,87 +1,36 @@
 require 'rails_helper'
 
 RSpec.describe FirstTestController, type: :controller do
-  describe 'GET index' do
-    # let!(:api_key) { '58d6ea8b979d350fc432bcdebb37de2b' }
-    let!(:cities_response) do
-      <<-EOF
-      [
-        {"id":2,
-        "name_ru":"Москва",
-        "name_en":"Moscow",
-        "active":true,
-        "featured":false,
-        "iata":"MOW",
-        "country":{"id":2,
-          "name_ru":"Россия",
-          "name_en":"Russia",
-          "iso2":"RU",
-          "active":true}},
-        {"id":1261,
-        "name_ru":"Анапа",
-        "name_en":"Anapa",
-        "active":true,
-        "featured":false,
-        "iata":null,
-        "country":{
-          "id":2,
-          "name_ru":"Россия",
-          "name_en":"Russia",
-          "iso2":"RU",
-          "active":true}}
-      ]
-      EOF
-    end
+  before { extend LevelTravelApiHelper }
 
+  describe 'GET index' do
+    let!(:cities_response) do
+      Typhoeus::Response.new(code: 200,
+        body: yaml_fixture('responses')['cities'])
+    end
     let!(:countries_response) do
-      <<-EOF
-      [
-        {"id":2,
-        "name_ru":"Россия",
-        "name_en":"Russia",
-        "iso2":"RU",
-        "active":true,
-        "searchable":true},
-        {"id":3,
-        "name_ru":"Египет",
-        "name_en":"Egypt",
-        "iso2":"EG",
-        "active":true,
-        "searchable":true},
-        {"id":4,
-        "name_ru":"Турция",
-        "name_en":"Turkey",
-        "iso2":"TR",
-        "active":true,
-        "searchable":true}
-      ]
-      EOF
+      Typhoeus::Response.new(code: 200,
+        body: yaml_fixture('responses')['countries'])
     end
 
     let!(:from_cities) do
-      JSON.parse(cities_response)
-        .map { |el| [el['name_ru'], el['name_en']] }
-        .sort_by! { |el| el[0] }
+      parse_json_references_response(cities_response, 'name_ru', 'name_en')
     end
 
     let!(:to_countries) do
-      JSON.parse(countries_response)
-        .map { |el| [el['name_ru'], el['iso2']] }
-        .sort_by! { |el| el[0] }
+      parse_json_references_response(countries_response, 'name_ru', 'iso2')
     end
 
     let!(:cities_request) do
-      stub_request(:get, 'https://level.travel/papi/references/cities')
-        .with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-                         'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" })
-        .to_return(status: 200, body: cities_response)
+      stub_typhoeus_request(
+        level_travel_api_request('references', 'cities'),
+        cities_response)
     end
 
     let!(:countries_request) do
-      stub_request(:get, 'https://level.travel/papi/references/countries')
-        .with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-                         'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" })
-        .to_return(status: 200, body: countries_response)
+      stub_typhoeus_request(
+        level_travel_api_request('references', 'countries'),
+        countries_response)
     end
 
     before do
@@ -114,47 +63,33 @@ RSpec.describe FirstTestController, type: :controller do
   describe 'POST show' do
     let(:from_city) { 'Moscow' }
     let(:to_country) { 'EG' }
-    # let(:current_date) { Time.now.strftime('%-d.%-m.%Y') }
-    # let(:offseted_date) { (Time.now + 31.day).strftime('%-d.%-m.%Y') }
-    let(:current_date) { Time.mktime(2014, 12, 01).strftime('%-d.%-m.%Y') }
-    let(:offseted_date) { Time.mktime(2015, 01, 01).strftime('%-d.%-m.%Y') }
+    let(:fake_today_date) { Date.parse('2014-12-01') }
+    let(:current_date) { fake_today_date.strftime('%-d.%-m.%Y') }
+    let(:offseted_date) { (fake_today_date + 31).strftime('%-d.%-m.%Y') }
+
+    let(:fan_response_body) { yaml_fixture('responses')['flights_and_nights'] }
 
     let!(:fan_response) do
-      <<-EOF
-      {
-      "2014-12-01":[5,8],
-      "2014-12-08":[5,8],
-      "2014-12-15":[5,8],
-      "2014-12-22":[5,8],
-      "2014-12-29":[5,8]
-      }
-      EOF
+      Typhoeus::Response.new(code: 200,
+        body: fan_response_body)
     end
 
-    let(:table_data) do
-      [[{ '1' => %w(5 8) }, '2', '3', '4', '5', '6', '7'],
-       [{ '8' => %w(5 8) }, '9', '10', '11', '12', '13', '14'],
-       [{ '15' => %w(5 8) }, '16', '17', '18', '19', '20', '21'],
-       [{ '22' => %w(5 8) }, '23', '24', '25', '26', '27', '28'],
-       [{ '29' => %w(5 8) }, '30', '31', '1', nil, nil, nil]]
+    let(:max_nights) do
+      JSON.parse(fan_response.body).max_by{ |line| line[1].size }[1].size
     end
-
-    let(:max_nights) { 2 }
 
     let!(:fan_request) do
-      stub_request(:get, 'https://level.travel/papi/search/flights_and_nights')
-        .with(
-          headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-                     'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" },
-          query: { 'city_from' => from_city,
-                   'country_to' => to_country,
-                   'start_date' => current_date,
-                   'end_date' => offseted_date })
-        .to_return(status: 200, body: fan_response)
+      stub_typhoeus_request(
+        flights_and_nights_request(
+          from_city,
+          to_country,
+          current_date,
+          offseted_date),
+        fan_response)
     end
 
     before do
-      allow(Time).to receive(:now).and_return(Time.mktime(2014, 12, 01))
+      allow(Date).to receive(:today).and_return(fake_today_date)
       post :show, from_city: from_city, to_country: to_country
     end
 
@@ -184,8 +119,8 @@ RSpec.describe FirstTestController, type: :controller do
       expect(assigns(:end_date)).to eq(offseted_date)
     end
 
-    it "assigns calendar table as '@table_data'" do
-      expect(assigns(:table_data)).to eq(table_data)
+    it "assigns response body hash as '@fan_hash'" do
+      expect(assigns(:fan_hash)).to eq(JSON.parse(fan_response_body))
     end
 
     it "assigns max days count as '@max_days'" do

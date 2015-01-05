@@ -8,8 +8,6 @@ require 'webmock/rspec'
 require 'sidekiq/testing'
 require 'pry'
 
-# require 'Date'
-
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -25,7 +23,7 @@ ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.infer_spec_type_from_file_location!
+  # config.infer_spec_type_from_file_location!
   config.order = :random
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
