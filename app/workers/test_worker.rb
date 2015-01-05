@@ -1,75 +1,49 @@
 class TestWorker
   include Sidekiq::Worker
+  include LevelTravelApiHelper
 
   def perform(email, fan_date, nights)
-    # def level_travel_api_requests(email, fan_date, nights)
-    countries = []
-
-    all_countries_response =
-      level_travel_api_request('references', 'countries').run
-
-    all_countries = if all_countries_response.success?
-                      JSON.parse(all_countries_response.body).map do
-                        |el| [el['name_ru'], el['iso2']]
-                      end
-                    else
-                      []
-    end
-
-    all_countries.sort_by! { |country| country[0] }
-
     hydra = Typhoeus::Hydra.hydra
-    requests = []
-
-    all_countries.each do |country_to|
-      request =
-        flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date)
-
-      requests << [country_to[0], request]
-
-      hydra.queue(request)
+    
+    requests = 
+      all_countries_from_api('name_ru', 'iso2').map do |country_to|
+        [country_to[0]] << 
+          hydra.queue(
+            flights_and_nights_request(
+              'Moscow', country_to[1], fan_date, fan_date)).last
     end
 
     hydra.run
 
-    requests.each do |country_request|
-      if country_request[1].response.success?
-        row = JSON.parse(country_request[1].response.body).first
-        countries << country_request[0] if row[1].include?(nights.to_i)
-      end
-    end
-
-    # country_fan_response =
-    #   flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date).run
-
-    SecondTestMailer.delay.countries_email(email, fan_date, nights, countries)
-    # SecondTestMailer.countries_email(email, fan_date, nights, countries).deliver
-    # SecondTestMailer.delay.countries_email(@email, @date, @nights, @countries)
+    SecondTestMailer.delay
+      .countries_email(
+        email,
+        fan_date,
+        nights,
+        parse_and_filter_fan_requests(
+          requests,
+          nights))
   end
 
   private
 
-  def flights_and_nights_request(city_from, country_to, start_date, end_date)
-    level_travel_api_request(
-      'search',
-      'flights_and_nights',
-      'city_from' => city_from,
-      'country_to' => country_to,
-      'start_date' => start_date,
-      'end_date' => end_date
-    )
+  def all_countries_from_api(*keys)
+    all_countries_response =
+      level_travel_api_request('references', 'countries').run
+
+    if all_countries_response.success?
+      parse_json_references_response(
+        all_countries_response, *keys).to_a
+    else
+      []
+    end
   end
 
-  def level_travel_api_request(module_name, api_name, options = {})
-    Typhoeus::Request.new(
-      "https://level.travel/papi/#{module_name}/#{api_name}",
-      method: :get,
-      ssl_verifypeer: false,
-      headers: {
-        'Accept' => 'application/vnd.leveltravel.v2',
-        'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\""
-      },
-      params: options
-    )
+  def parse_and_filter_fan_requests(requests, nights)
+    requests.select do |country_request|
+      response = country_request[1].response
+      (response.success? &&
+        JSON.parse(response.body).first[1].include?(nights.to_i))
+    end.map { |country_request| country_request[0] }
   end
 end

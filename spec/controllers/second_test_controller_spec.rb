@@ -7,6 +7,7 @@ RSpec.describe SecondTestController, type: :controller do
     subject { response }
 
     it { should be_success }
+    it { should render_template('index') }
   end
 
   describe 'POST send_message' do
@@ -16,9 +17,8 @@ RSpec.describe SecondTestController, type: :controller do
     let(:email) { 's.a.pisarev@gmail.com' }
     let(:city_from) { 'Moscow' }
 
-    context 'after post' do
+    describe 'after post' do
       before do
-        ActionMailer::Base.deliveries = []
         post :send_message,
              date: date,
              nights: nights,
@@ -28,40 +28,44 @@ RSpec.describe SecondTestController, type: :controller do
       subject { response }
 
       it { should be_success }
+      it { should render_template('send_message') }
 
-      it "assigns provided date as '@date'" do
-        expect(assigns(:date)).to eq(date)
-      end
-
-      it "assigns provided nights as '@nights'" do
-        expect(assigns(:nights)).to eq(nights)
-      end
-
-      it "assigns provided email as '@email'" do
-        expect(assigns(:email)).to eq(email)
+      describe 'assignments:' do
+        it "assigns provided date as '@date'" do
+          expect(assigns(:date)).to eq(date)
+        end
+        it "assigns provided nights as '@nights'" do
+          expect(assigns(:nights)).to eq(nights)
+        end
+        it "assigns provided email as '@email'" do
+          expect(assigns(:email)).to eq(email)
+        end
       end
     end
 
-    context 'using sidekiq' do
+    describe 'using sidekiq' do
       it 'schedules API requests with Sidekiq' do
         expect do
           post :send_message,
                date: date,
                nights: nights,
                email: email
-        end
-          .to change { TestWorker.jobs.count }.by(1)
+        end.to change { TestWorker.jobs.count }.by(1)
       end
 
-      it 'calls Sidekiq worker' do
-        expect(TestWorker)
-          .to receive(:perform_async)
-          .with(email, fan_date, nights)
-          .and_call_original
-        post :send_message,
-             date: date,
-             nights: nights,
-             email: email
+      describe 'perform_async' do
+        after do
+          post :send_message,
+               date: date,
+               nights: nights,
+               email: email
+        end
+        
+        it 'calls Sidekiq worker' do
+          expect(TestWorker)
+            .to receive(:perform_async)
+            .with(email, fan_date, nights)
+        end
       end
     end
   end

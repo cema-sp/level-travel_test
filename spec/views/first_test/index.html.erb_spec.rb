@@ -4,7 +4,7 @@ RSpec.describe 'first_test/index', type: :view do
   let(:from_cities) do
     [%w(Москва Moscow),
      %w(Кингстон Kingston),
-     ['Пало Альто', 'Palo Alto']]
+     %w(Лондон London)]
   end
 
   let(:from_cities_options) { from_cities.map { |el| el[0] } }
@@ -12,7 +12,7 @@ RSpec.describe 'first_test/index', type: :view do
   let(:to_countries) do
     [%w(Россия RU),
      %w(Ямайка JM),
-     %w(США US)]
+     %w(Англия England)]
   end
 
   let(:to_countries_options) { to_countries.map { |el| el[0] } }
@@ -26,10 +26,8 @@ RSpec.describe 'first_test/index', type: :view do
   subject { rendered }
 
   it { should have_select('from_city', options: from_cities_options) }
-
   it { should have_select('to_country', options: to_countries_options) }
 
   it { should have_selector("form[method=\"post\"][action=\"#{first_path}\"]") }
-
   it { should have_selector("input[type=\"submit\"][value=\"Показать\"]") }
 end

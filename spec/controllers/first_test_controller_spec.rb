@@ -16,7 +16,6 @@ RSpec.describe FirstTestController, type: :controller do
     let!(:from_cities) do
       parse_json_references_response(cities_response, 'name_ru', 'name_en')
     end
-
     let!(:to_countries) do
       parse_json_references_response(countries_response, 'name_ru', 'iso2')
     end
@@ -26,7 +25,6 @@ RSpec.describe FirstTestController, type: :controller do
         level_travel_api_request('references', 'cities'),
         cities_response)
     end
-
     let!(:countries_request) do
       stub_typhoeus_request(
         level_travel_api_request('references', 'countries'),
@@ -40,23 +38,24 @@ RSpec.describe FirstTestController, type: :controller do
     subject { response }
 
     it { should be_success }
-
     it { should render_template('index') }
 
-    it 'makes request to fetch all cities from API' do
-      expect(cities_request).to have_been_requested
+    describe 'API requests:' do
+      it 'makes request to fetch all cities from API' do
+        expect(cities_request).to have_been_requested
+      end
+      it 'makes request to fetch all countries from API' do
+        expect(countries_request).to have_been_requested
+      end
     end
 
-    it 'makes request to fetch all countries from API' do
-      expect(countries_request).to have_been_requested
-    end
-
-    it "assigns all cities as '@from_cities'" do
-      expect(assigns(:from_cities)).to eq(from_cities)
-    end
-
-    it "assigns all countries as '@to_countries'" do
-      expect(assigns(:to_countries)).to eq(to_countries)
+    describe 'assignments:' do
+      it "assigns all cities as '@from_cities'" do
+        expect(assigns(:from_cities)).to eq(from_cities)
+      end
+      it "assigns all countries as '@to_countries'" do
+        expect(assigns(:to_countries)).to eq(to_countries)
+      end
     end
   end
 
@@ -96,35 +95,28 @@ RSpec.describe FirstTestController, type: :controller do
     subject { response }
 
     it { should be_success }
-
     it { should render_template('show') }
 
     it 'makes request to fetch flights and nights from API' do
       expect(fan_request).to have_been_requested
     end
 
-    it "assigns provided city as '@from_city'" do
-      expect(assigns(:from_city)).to eq(from_city)
-    end
-
-    it "assigns provided country as '@to_country'" do
-      expect(assigns(:to_country)).to eq(to_country)
-    end
-
-    it "assigns current date as '@start_date'" do
-      expect(assigns(:start_date)).to eq(current_date)
-    end
-
-    it "assigns offseted date as '@end_date'" do
-      expect(assigns(:end_date)).to eq(offseted_date)
-    end
-
-    it "assigns response body hash as '@fan_hash'" do
-      expect(assigns(:fan_hash)).to eq(JSON.parse(fan_response_body))
-    end
-
-    it "assigns max days count as '@max_days'" do
-      expect(assigns(:max_nights)).to eq(max_nights)
+    describe 'assignments:' do
+      it "assigns provided city as '@from_city'" do
+        expect(assigns(:from_city)).to eq(from_city)
+      end
+      it "assigns provided country as '@to_country'" do
+        expect(assigns(:to_country)).to eq(to_country)
+      end
+      it "assigns current date as '@start_date'" do
+        expect(assigns(:start_date)).to eq(current_date)
+      end
+      it "assigns offseted date as '@end_date'" do
+        expect(assigns(:end_date)).to eq(offseted_date)
+      end
+      it "assigns response body hash as '@fan_hash'" do
+        expect(assigns(:fan_hash)).to eq(JSON.parse(fan_response_body))
+      end
     end
   end
 end

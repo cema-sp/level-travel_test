@@ -47,7 +47,7 @@ RSpec.describe FirstTestHelper, type: :helper do
           end
         end
 
-        it 'has empty cells for next days' do
+        it 'has empty cells for further days' do
           (end_date.cwday.next..7).each do |n|
             should have_xpath(
               "//tbody/tr[last()]/td[#{n}]/strong[text()=\" \"]")
@@ -62,7 +62,7 @@ RSpec.describe FirstTestHelper, type: :helper do
     let(:value) { 4 }
     let(:color) { 'background-color: rgb(255, 204, 0);' }
 
-    it "returns 'background-color: @color;'" do
+    it "returns 'background-color: rgb(255, 204, 0);'" do
       expect(cell_bg_color(max, value)).to eq(color)
     end
   end

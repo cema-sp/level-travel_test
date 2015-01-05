@@ -4,6 +4,6 @@ class SecondTestMailer < ActionMailer::Base
   def countries_email(email, date, nights, countries)
     @email, @date, @nights, @countries = email, date, nights, countries
 
-    mail(to: @email, subject: "Countries on #{@date} for #{@nights} nights")
+    mail(to: @email, subject: "Страны, доступные #{@date} на #{@nights} ночей")
   end
 end

@@ -4,48 +4,14 @@ module FirstTestHelper
     start_date = Date.parse(start_date) unless start_date.instance_of?(Date)
     end_date = Date.parse(end_date) unless end_date.instance_of?(Date)
 
-    thead =
-      content_tag :thead do
-        content_tag :tr do
-          days_of_week.map do |dow|
-            content_tag(:th, dow)
-          end.join.html_safe
-        end
-      end
-
-    tbody_cells =
-      ((1...start_date.cwday).map do
-        content_tag :td do
-          content_tag :strong, ' '
-        end
-      end) +
-
-      ((start_date..end_date).map do |date|
-        content_tag :td do
-          if (nights = fan_hash[date.strftime('%Y-%m-%d')])
-            (content_tag :strong, date.day) +
-            (content_tag :p, nights.join(', '))
-          else
-            content_tag :strong, date.day
-          end
-        end
-      end) +
-
-      ((end_date.cwday.next..7).map do
-        content_tag :td do
-          content_tag :strong, ' '
-        end
-      end)
-
-    tbody =
-      content_tag :tbody do
-        tbody_cells.each_slice(7).to_a.map do |row|
-          content_tag :tr, row.join.html_safe
-        end.join.html_safe
-      end
-
     content_tag :table,
-                (thead + tbody),
+                flights_and_nights_calendar_thead(days_of_week)
+                  .concat(flights_and_nights_calendar_tbody(
+                    flights_and_nights_calendar_tbody_cells(
+                      start_date,
+                      end_date,
+                      fan_hash),
+                    7)),
                 class: 'ui seven column table',
                 id: 'calendar'
   end
@@ -63,5 +29,55 @@ module FirstTestHelper
       g = 255
     end
     "background-color: rgb(#{r.round}, #{g.round}, #{b});"
+  end
+
+  private
+
+  def flights_and_nights_calendar_thead(days_of_week)
+    content_tag :thead do
+      content_tag :tr do
+        days_of_week.map do |dow|
+          content_tag(:th, dow)
+        end.join.html_safe
+      end
+    end
+  end
+
+  def flights_and_nights_calendar_tbody(tbody_cells, slice_size)
+    content_tag :tbody do
+      tbody_cells.each_slice(slice_size).to_a.map do |row|
+        content_tag :tr, row.join.html_safe
+      end.join.html_safe
+    end
+  end
+
+  def flights_and_nights_calendar_tbody_cells(start_date, end_date, fan_hash)
+    max_nights = fan_hash.max_by { |pair| pair[1].size }[1].size
+
+    ((1...start_date.cwday).map do
+      content_tag :td, class: cell_bg_color(max_nights, 0) do
+        content_tag :strong, ' '
+      end
+    end) +
+
+    ((start_date..end_date).map do |date|
+      nights = fan_hash[date.strftime('%Y-%m-%d')]
+      nights_count = nights.nil? ? 0 : nights.size
+
+      content_tag :td, class: cell_bg_color(max_nights, nights_count) do
+        if nights
+          (content_tag :strong, date.day) +
+          (content_tag :p, nights.join(', '))
+        else
+          content_tag :strong, date.day
+        end
+      end
+    end) +
+
+    ((end_date.cwday.next..7).map do
+      content_tag :td, class: cell_bg_color(max_nights, 0) do
+        content_tag :strong, ' '
+      end
+    end)
   end
 end

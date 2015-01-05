@@ -6,17 +6,26 @@ RSpec.describe SecondTestMailer, type: :mailer do
     let(:nights) { '7' }
     let(:email) { 's.a.pisarev@gmail.com' }
     let(:countries) { %w(Russia Egypt Turkey) }
-    let(:countries_email) { described_class.countries_email(email, date, nights, countries) }
 
-    it 'renders the headers' do
-      expect(countries_email.subject).to eq("Countries on #{date} for #{nights} nights")
-      expect(countries_email.to).to eq([email])
-      expect(countries_email.from).to eq(['s.a.pisarev@gmail.com'])
+    let(:countries_email) do
+      described_class.countries_email(email, date, nights, countries)
     end
 
-    it 'renders the body' do
-      countries.each do |country|
-        expect(countries_email.text_part.body.decoded).to match(country)
+    subject { countries_email }
+
+    describe 'parameters' do
+      its(:subject) { should eq("Страны, доступные #{date} на #{nights} ночей") }
+      its(:to) { should eq([email]) }
+      its(:from) {should eq(['s.a.pisarev@gmail.com']) }
+    end
+
+    describe 'body' do
+      subject { countries_email.text_part.body.decoded }
+
+      it 'matches each country' do
+        countries.each do |country|
+          should match(country)
+        end
       end
     end
   end

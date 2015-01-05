@@ -2,8 +2,9 @@ class FirstTestController < ApplicationController
   include LevelTravelApiHelper
 
   def index
-    all_cities_request = level_travel_api_request('references', 'cities')
-    all_countries_request = level_travel_api_request('references', 'countries')
+    all_cities_request, all_countries_request = 
+      level_travel_api_request('references', 'cities'),
+      level_travel_api_request('references', 'countries')
 
     hydra = Typhoeus::Hydra.hydra
     hydra.queue(all_cities_request)
@@ -13,16 +14,15 @@ class FirstTestController < ApplicationController
 
     @from_cities, @to_countries = [], []
     
-    @from_cities =
+    @from_cities = 
       parse_json_references_response(
         all_cities_request.response,
-        'name_ru', 'name_en') if all_cities_request.response.success?
+        'name_ru', 'name_en').to_a if all_cities_request.response.success?
 
-    @to_countries =
+    @to_countries = 
       parse_json_references_response(
         all_countries_request.response,
-        'name_ru', 'iso2') if all_countries_request.response.success?
-    end
+        'name_ru', 'iso2').to_a if all_countries_request.response.success?
   end
 
   def show
@@ -42,10 +42,7 @@ class FirstTestController < ApplicationController
         @end_date)
       .run
 
-    @fan_hash =
-      (fan_response.success? ? JSON.parse(fan_response.body) : {})
-
-    @max_nights = @fan_hash.max_by { |line| line[1].size }[1].size
+    @fan_hash = (fan_response.success? ? JSON.parse(fan_response.body) : {})
   end
 
   private
