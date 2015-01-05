@@ -6,12 +6,8 @@ RSpec.describe 'first_test/show', type: :view do
   let(:from_city) { 'Moscow' }
   let(:to_country) { 'EG' }
   let(:max_nights) { 10 }
-  let(:table_data) do
-    [[{ '1' => %w(5 8) }, '2', '3', '4', '5', '6', '7'],
-     [{ '8' => %w(5 8) }, '9', '10', '11', '12', '13', '14'],
-     [{ '15' => %w(5 8) }, '16', '17', '18', '19', '20', '21'],
-     [{ '22' => %w(5 8) }, '23', '24', '25', '26', '27', '28'],
-     [{ '29' => %w(5 8) }, '30', '31', nil, nil, nil, nil]]
+  let(:fan_hash) do
+    JSON.parse(yaml_fixture('responses')['flights_and_nights'])
   end
 
   before do
@@ -20,45 +16,15 @@ RSpec.describe 'first_test/show', type: :view do
     assign(:from_city, from_city)
     assign(:to_country, to_country)
     assign(:max_nights, max_nights)
-    assign(:table_data, table_data)
+    assign(:fan_hash, fan_hash)
     render
   end
 
   subject { rendered }
 
-  it { should_not be_nil }
-
   it 'has proper header' do
     should have_content("#{start_date} - #{end_date}")
     should have_content(from_city)
     should have_content(to_country)
-  end
-
-  it 'has proper table header' do
-    %w(Пн Вт Ср Чт Пт Сб Вс).each do |dow|
-      should have_selector('table thead th', text: dow)
-    end
-  end
-
-  it 'has proper table body' do
-    table_data.each_with_index do |table_row, row_index|
-      table_row.each_with_index do |table_cell, cell_index|
-        case table_cell
-        when Hash
-          should have_xpath(
-            "//table/tbody\
-            /tr[#{row_index + 1}]\
-            /td[#{cell_index + 1}]\
-            [strong/text()=\"#{table_cell.first[0]}\"]\
-            [p/text()=\"#{table_cell.first[1].join(', ')}\"]")
-        when String
-          should have_xpath(
-            "//table/tbody\
-            /tr[#{row_index + 1}]\
-            /td[#{cell_index + 1}]\
-            /strong[text()=\"#{table_cell}\"]")
-        end
-      end
-    end
   end
 end

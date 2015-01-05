@@ -17,7 +17,7 @@ RSpec.describe FirstTestHelper, type: :helper do
     describe 'table' do
       describe 'thead' do
         it 'has all week days names' do
-          %w{ Пн Вт Ср Чт Пт Сб Вс }.each do |dow|
+          %w(Пн Вт Ср Чт Пт Сб Вс).each do |dow|
             should have_xpath("//thead/tr/th[text()=\"#{dow}\"]")
           end
         end

@@ -22,9 +22,9 @@ class TestWorker
     requests = []
 
     all_countries.each do |country_to|
-      request = 
+      request =
         flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date)
-      
+
       requests << [country_to[0], request]
 
       hydra.queue(request)
@@ -39,8 +39,8 @@ class TestWorker
       end
     end
 
-      # country_fan_response =
-      #   flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date).run
+    # country_fan_response =
+    #   flights_and_nights_request('Moscow', country_to[1], fan_date, fan_date).run
 
     SecondTestMailer.delay.countries_email(email, fan_date, nights, countries)
     # SecondTestMailer.countries_email(email, fan_date, nights, countries).deliver

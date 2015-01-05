@@ -11,14 +11,14 @@ end
 
 Given(/body of '(.+)' response from fixture '(.+)'/) do |response, fixture|
   instance_variable_set("@#{response}_response",
-    Typhoeus::Response.new(
-      code: 200,
-      body: yaml_fixture(fixture)[response]))
+                        Typhoeus::Response.new(
+                          code: 200,
+                          body: yaml_fixture(fixture)[response]))
 
   instance_variable_set("@#{response}_request",
-    stub_typhoeus_request(
-      level_travel_api_request('references', response),
-      instance_variable_get("@#{response}_response")))
+                        stub_typhoeus_request(
+                          level_travel_api_request('references', response),
+                          instance_variable_get("@#{response}_response")))
 end
 
 Given(/^nights for selected country in f&n API response are:$/) do |table|
@@ -28,9 +28,8 @@ Given(/^nights for selected country in f&n API response are:$/) do |table|
       row['Nights'].split(',').map(&:to_i)
   end
 
-  @fan_response = 
+  @fan_response =
     Typhoeus::Response.new(code: 200, body: fan_response_body_hash.to_json)
-
 end
 
 When(/^I visit '(.*)' path$/) do |path|
@@ -66,9 +65,7 @@ Then(/^I see the proper info$/) do
 end
 
 Then(/^I see the proper calendar table:$/) do |table|
-  step 'with proper thead'
-
-  table_data = []
+  @table_data = []
   tmp_row = []
 
   table.hashes.each do |table_row|
@@ -79,11 +76,22 @@ Then(/^I see the proper calendar table:$/) do |table|
         tmp_row << (table_row[wday].empty? ? nil : table_row[wday])
       end
     end
-    table_data << tmp_row.clone
+    @table_data << tmp_row.clone
     tmp_row.clear
   end
 
-  table_data.each_with_index do |table_row, row_index|
+  step 'with proper thead'
+  step 'with proper tbody'
+end
+
+Then(/with proper thead/) do
+  %w(Пн Вт Ср Чт Пт Сб Вс).each do |dow|
+    expect(page).to have_selector('table thead th', text: dow)
+  end
+end
+
+Then(/with proper tbody/) do
+  @table_data.each_with_index do |table_row, row_index|
     table_row.each_with_index do |table_cell, cell_index|
       case table_cell
       when Hash
@@ -101,12 +109,6 @@ Then(/^I see the proper calendar table:$/) do |table|
           /strong[text()=\"#{table_cell}\"]")
       end
     end
-  end
-end
-
-Then(/with proper thead/) do
-  %w(Пн Вт Ср Чт Пт Сб Вс).each do |dow|
-    expect(page).to have_selector('table thead th', text: dow)
   end
 end
 

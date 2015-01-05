@@ -6,11 +6,11 @@ RSpec.describe FirstTestController, type: :controller do
   describe 'GET index' do
     let!(:cities_response) do
       Typhoeus::Response.new(code: 200,
-        body: yaml_fixture('responses')['cities'])
+                             body: yaml_fixture('responses')['cities'])
     end
     let!(:countries_response) do
       Typhoeus::Response.new(code: 200,
-        body: yaml_fixture('responses')['countries'])
+                             body: yaml_fixture('responses')['countries'])
     end
 
     let!(:from_cities) do
@@ -71,11 +71,11 @@ RSpec.describe FirstTestController, type: :controller do
 
     let!(:fan_response) do
       Typhoeus::Response.new(code: 200,
-        body: fan_response_body)
+                             body: fan_response_body)
     end
 
     let(:max_nights) do
-      JSON.parse(fan_response.body).max_by{ |line| line[1].size }[1].size
+      JSON.parse(fan_response.body).max_by { |line| line[1].size }[1].size
     end
 
     let!(:fan_request) do

@@ -6,7 +6,7 @@ RSpec.describe LevelTravelApiHelper do
   describe '#level_travel_api_request(module_name, api_name, options = {})' do
     let(:module_name) { 'test_module' }
     let(:api_name) { 'test_api_name' }
-    let(:options) { {test_option: 'test_value'} }
+    let(:options) { { test_option: 'test_value' } }
 
     let(:request) { level_travel_api_request(module_name, api_name, options) }
 
@@ -19,20 +19,20 @@ RSpec.describe LevelTravelApiHelper do
 
     context 'original_options' do
       subject { request.original_options }
-      
+
       its([:params]) { should eq(options) }
 
       its([:headers]) do
-        should include("Accept" => 'application/vnd.leveltravel.v2')
+        should include('Accept' => 'application/vnd.leveltravel.v2')
       end
 
       its([:headers]) do
-        should include("Authorization" => "Token token=\"#{ENV['LT_API_KEY']}\"")
+        should include('Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"")
       end
     end
   end
 
-  describe '#flights_and_nights_request 
+  describe '#flights_and_nights_request
     (city_from, country_to, start_date, end_date)' do
     let(:city_from) { 'test_city' }
     let(:country_to) { 'test_country' }
@@ -46,14 +46,14 @@ RSpec.describe LevelTravelApiHelper do
     after { request }
 
     it 'calls #level_travel_api_request' do
-      expect(self).
-        to receive(:level_travel_api_request).
-        with('search',
-             'flights_and_nights',
-             'city_from' => city_from,
-             'country_to' => country_to,
-             'start_date' => start_date,
-             'end_date' => end_date)
+      expect(self)
+        .to receive(:level_travel_api_request)
+        .with('search',
+              'flights_and_nights',
+              'city_from' => city_from,
+              'country_to' => country_to,
+              'start_date' => start_date,
+              'end_date' => end_date)
     end
   end
 
@@ -64,12 +64,12 @@ RSpec.describe LevelTravelApiHelper do
       )
     end
 
-    let(:keys) { ["name_en", "iso2"] }
+    let(:keys) { %w(name_en iso2) }
 
     let(:expected_result) do
-      [["Egypt","EG"],
-      ["Russia","RU"],
-      ["Turkey","TR"]]
+      [%w(Egypt EG),
+       %w(Russia RU),
+       %w(Turkey TR)]
     end
 
     let(:result) do

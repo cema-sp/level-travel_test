@@ -12,8 +12,8 @@ RSpec.describe RailsCacheDelegator do
       expect(rails_cache_delegator.__getobj__)
         .to receive(:write)
         .with(request.hash,
-          response,
-          expires_in: described_class.const_get('EXPIRATION_TIME').minutes)
+              response,
+              expires_in: described_class.const_get('EXPIRATION_TIME').minutes)
     end
   end
 

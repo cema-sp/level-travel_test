@@ -12,16 +12,16 @@ class FirstTestController < ApplicationController
     hydra.run
 
     @from_cities, @to_countries = [], []
-    
+
     if all_cities_request.response.success?
-      @from_cities = 
+      @from_cities =
         parse_json_references_response(
           all_cities_request.response,
           'name_ru', 'name_en')
     end
 
     if all_countries_request.response.success?
-      @to_countries = 
+      @to_countries =
         parse_json_references_response(
           all_countries_request.response,
           'name_ru', 'iso2')
@@ -45,10 +45,10 @@ class FirstTestController < ApplicationController
         @end_date)
       .run
 
-    @fan_hash = 
-      (fan_response.success? ? JSON.parse(fan_response.body) : {} )
+    @fan_hash =
+      (fan_response.success? ? JSON.parse(fan_response.body) : {})
 
-    @max_nights = @fan_hash.max_by{ |line| line[1].size }[1].size
+    @max_nights = @fan_hash.max_by { |line| line[1].size }[1].size
   end
 
   private
