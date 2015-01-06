@@ -8,6 +8,9 @@ Documentation:
 Lint/HandleExceptions:
   Exclude:
     - 'bin/**/*'
+Metrics/LineLength:
+  Exclude:
+    - 'lib/tasks/cucumber.rake'
 RSpec/DescribeClass:
   Exclude:
     - 'spec/views/**/*'
