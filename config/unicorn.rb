@@ -6,7 +6,8 @@ before_fork do |_server, _worker|
   @sidekiq_pid ||= spawn('bundle exec sidekiq -C config/sidekiq.yml -v')
 
   Signal.trap 'TERM' do
-    logger.log 'Unicorn master intercepting TERM and sending myself QUIT instead'
+    logger.log 'Unicorn master intercepting TERM \
+      and sending myself QUIT instead'
     # puts 'Unicorn master intercepting TERM and sending myself QUIT instead'
     Process.kill 'QUIT', Process.pid
   end

@@ -6,7 +6,8 @@ rerun_opts =
   else
     "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} #{rerun}"
   end
-std_opts = "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} --strict --tags ~@wip"
+std_opts = "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} \
+  --strict --tags ~@wip"
 %>
 default: <%= std_opts %> features
 wip: --tags @wip:3 --wip features
