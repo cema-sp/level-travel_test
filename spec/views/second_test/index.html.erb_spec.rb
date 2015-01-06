@@ -9,6 +9,10 @@ RSpec.describe 'second_test/index', type: :view do
   it { should have_field('date', type: 'date') }
   it { should have_field('nights', type: 'number') }
 
-  it { should have_selector("form[method=\"post\"][action=\"#{second_path}\"]") }
+  it do
+    should have_selector(
+      "form[method=\"post\"][action=\"#{second_path}\"]")
+  end
+
   it { should have_selector("input[type=\"submit\"][value=\"Искать\"]") }
 end

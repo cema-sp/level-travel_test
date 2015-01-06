@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe TestWorker do
+  before { extend LevelTravelApiHelper }
+
   describe '#perform(email, fan_date, nights)' do
     let(:date) { '2014-12-30' }
     let(:fan_date) { Date.parse(date).strftime('%d.%m.%Y') }
@@ -9,150 +11,94 @@ RSpec.describe TestWorker do
     let(:city_from) { 'Moscow' }
 
     let!(:countries_response) do
-      <<-EOF
-      [
-        {"id":2,
-        "name_ru":"Russia",
-        "name_en":"Russia",
-        "iso2":"RU",
-        "active":true,
-        "searchable":true},
-        {"id":3,
-        "name_ru":"Egypt",
-        "name_en":"Egypt",
-        "iso2":"EG",
-        "active":true,
-        "searchable":true},
-        {"id":4,
-        "name_ru":"Turkey",
-        "name_en":"Turkey",
-        "iso2":"TR",
-        "active":true,
-        "searchable":true}
-      ]
-      EOF
-    end
-
-    let!(:fan_response) do
-      { 'RU' => '{"2014-12-30":[5,6]}',
-        'EG' => '{"2014-12-30":[5,7]}',
-        'TR' => '{"2014-12-30":[7]}' }
-    end
-
-    let!(:to_countries_iso) do
-      JSON.parse(countries_response)
-        .map { |el| el['iso2'] }
+      Typhoeus::Response.new(code: 200,
+                             body: yaml_fixture('responses')['countries'])
     end
 
     let!(:countries_request) do
-      stub_request(:get, 'https://level.travel/papi/references/countries')
-        .with(headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-                         'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" })
-        .to_return(status: 200, body: countries_response)
+      stub_typhoeus_request(
+        level_travel_api_request('references', 'countries'),
+        countries_response)
     end
 
-    let!(:fan_request_ru) do
-      country_fan_request('RU', city_from, fan_date, fan_response['RU'])
+    let!(:to_countries) do
+      parse_json_references_response(countries_response, 'name_ru', 'iso2')
     end
 
-    let!(:fan_request_eg) do
-      country_fan_request('EG', city_from, fan_date, fan_response['EG'])
+    let!(:fan_responses_bodies) do
+      ["{\"#{date}\":[5,6]}",
+       "{\"#{date}\":[5,#{nights}]}",
+       "{\"#{date}\":[#{nights}]}"]
     end
 
-    let!(:fan_request_tr) do
-      country_fan_request('TR', city_from, fan_date, fan_response['TR'])
+    let!(:expected_countries) { to_countries[1, 2].map { |el| el[0] } }
+
+    let!(:fan_responses) do
+      fan_responses_bodies.map do |fan_responses_body|
+        Typhoeus::Response.new(code: 200,
+                               body: fan_responses_body)
+      end
+    end
+
+    let!(:fan_requests) do
+      # binding.pry
+      to_countries.each_with_index.map do |to_country, index|
+        stub_typhoeus_request(
+          flights_and_nights_request(
+            city_from,
+            to_country[1],
+            fan_date,
+            fan_date),
+          fan_responses[index])
+      end
     end
 
     before(:all) { Sidekiq::Testing.inline! }
     after(:all) { Sidekiq::Testing.fake! }
 
-    context 'after action called' do
+    context "after '#perform_async'" do
       before do
-        ActionMailer::Base.deliveries = []
         described_class.perform_async(email, fan_date, nights)
-        # TestWorker.new.level_travel_api_requests(email, fan_date, nights)
       end
 
-      it 'makes request to fetch all countries from API' do
-        expect(countries_request).to have_been_requested
-      end
-
-      it 'makes requests to fetch nights for each country' do
-        expect(fan_request_ru).to have_been_requested
-        expect(fan_request_eg).to have_been_requested
-        expect(fan_request_tr).to have_been_requested
-      end
-
-      context 'delivered email' do
-        it "has 's.a.pisarev@gmail.com' in 'from'" do
-          expect(ActionMailer::Base.deliveries.last.from).to eq(['s.a.pisarev@gmail.com'])
+      describe 'API requests:' do
+        it 'makes request to fetch all countries from API' do
+          expect(countries_request).to have_been_requested
         end
 
-        it "has provided email in 'to'" do
-          expect(ActionMailer::Base.deliveries.last.to).to eq([email])
-        end
-
-        it "has provided night in 'subject'" do
-          expect(ActionMailer::Base.deliveries.last.subject).to match(nights)
-        end
-
-        it "has provided date in 'subject'" do
-          expect(ActionMailer::Base.deliveries.last.subject).to match(fan_date)
-        end
-
-        it "has provided night in 'body'" do
-          expect(ActionMailer::Base.deliveries.last.text_part.body.decoded).to match(nights)
-        end
-
-        it "has provided date in 'body'" do
-          expect(ActionMailer::Base.deliveries.last.text_part.body.decoded).to match(fan_date)
-        end
-
-        it "has proper countries in 'body'" do
-          expect(ActionMailer::Base.deliveries.last.text_part.body.decoded)
-            .to match('Egypt')
-          expect(ActionMailer::Base.deliveries.last.text_part.body.decoded)
-            .to match('Turkey')
+        it 'makes requests to fetch nights for each country' do
+          fan_requests.each do |fan_request|
+            expect(fan_request).to have_been_requested
+          end
         end
       end
     end
 
-    it 'sends an email' do
-      expect do
-        described_class.perform_async(email, fan_date, nights)
-      end
-        .to change { ActionMailer::Base.deliveries.count }.by(1)
-    end
-
-    describe 'schedules mail delivery with Sidekiq' do
+    describe 'with Sidekiq' do
       around do |example|
         Sidekiq::Testing.fake!(&example)
       end
       before do
         described_class.jobs.clear
+        Sidekiq::Extensions::DelayedMailer.jobs.clear
         described_class.perform_async(email, fan_date, nights)
       end
-      it 'schedules mail delivery with Sidekiq' do
+
+      it 'schedules delayed mail delivery' do
         expect { described_class.drain }
           .to change { Sidekiq::Extensions::DelayedMailer.jobs.size }.by(1)
       end
-    end
 
-    it 'calls SecondTestMailer mailer' do
-      expect(SecondTestMailer).to receive(:countries_email).and_call_original
-      described_class.perform_async(email, fan_date, nights)
+      describe 'scheduled delayed mail' do
+        before { described_class.drain }
+        after { Sidekiq::Extensions::DelayedMailer.drain }
+
+        specify 'SecondTestMailer called' do
+          expect(SecondTestMailer)
+            .to receive(:countries_email)
+            .with(email, fan_date, nights, expected_countries)
+        end
+      end
     end
   end
-end
-
-def country_fan_request(country_iso, city_from, fan_date, fan_response)
-  stub_request(:get, 'https://level.travel/papi/search/flights_and_nights')
-    .with(
-      headers: { 'Accept' => 'application/vnd.leveltravel.v2',
-                 'Authorization' => "Token token=\"#{ENV['LT_API_KEY']}\"" },
-      query: { 'city_from' => city_from,
-               'country_to' => country_iso,
-               'start_date' => fan_date,
-               'end_date' => fan_date })
-    .to_return(status: 200, body: fan_response)
 end

@@ -1,6 +1,8 @@
 module SpecHelpers
   def yaml_fixture(name)
-    YAML.load(File.read(Rails.root.join('spec', 'fixtures', name.to_s + '.yml')))
+    YAML.load(
+      File.read(
+        Rails.root.join('spec', 'fixtures', name.to_s + '.yml')))
   end
 
   def stub_typhoeus_request(request, response)

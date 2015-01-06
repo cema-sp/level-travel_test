@@ -2,7 +2,7 @@ class FirstTestController < ApplicationController
   include LevelTravelApiHelper
 
   def index
-    all_cities_request, all_countries_request = 
+    all_cities_request, all_countries_request =
       level_travel_api_request('references', 'cities'),
       level_travel_api_request('references', 'countries')
 
@@ -13,13 +13,13 @@ class FirstTestController < ApplicationController
     hydra.run
 
     @from_cities, @to_countries = [], []
-    
-    @from_cities = 
+
+    @from_cities =
       parse_json_references_response(
         all_cities_request.response,
         'name_ru', 'name_en').to_a if all_cities_request.response.success?
 
-    @to_countries = 
+    @to_countries =
       parse_json_references_response(
         all_countries_request.response,
         'name_ru', 'iso2').to_a if all_countries_request.response.success?

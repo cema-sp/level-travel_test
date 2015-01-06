@@ -5,8 +5,8 @@ module FirstTestHelper
     end_date = Date.parse(end_date) unless end_date.instance_of?(Date)
 
     content_tag :table,
-                flights_and_nights_calendar_thead(days_of_week)
-                  .concat(flights_and_nights_calendar_tbody(
+                flights_and_nights_calendar_thead(days_of_week).concat(
+                  flights_and_nights_calendar_tbody(
                     flights_and_nights_calendar_tbody_cells(
                       start_date,
                       end_date,
@@ -60,24 +60,24 @@ module FirstTestHelper
       end
     end) +
 
-    ((start_date..end_date).map do |date|
-      nights = fan_hash[date.strftime('%Y-%m-%d')]
-      nights_count = nights.nil? ? 0 : nights.size
+      ((start_date..end_date).map do |date|
+        nights = fan_hash[date.strftime('%Y-%m-%d')]
+        nights_count = nights.nil? ? 0 : nights.size
 
-      content_tag :td, class: cell_bg_color(max_nights, nights_count) do
-        if nights
-          (content_tag :strong, date.day) +
-          (content_tag :p, nights.join(', '))
-        else
-          content_tag :strong, date.day
+        content_tag :td, class: cell_bg_color(max_nights, nights_count) do
+          if nights
+            (content_tag :strong, date.day) +
+            (content_tag :p, nights.join(', '))
+          else
+            content_tag :strong, date.day
+          end
         end
-      end
-    end) +
+      end) +
 
-    ((end_date.cwday.next..7).map do
-      content_tag :td, class: cell_bg_color(max_nights, 0) do
-        content_tag :strong, ' '
-      end
-    end)
+      ((end_date.cwday.next..7).map do
+        content_tag :td, class: cell_bg_color(max_nights, 0) do
+          content_tag :strong, ' '
+        end
+      end)
   end
 end

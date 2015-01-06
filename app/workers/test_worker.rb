@@ -4,14 +4,14 @@ class TestWorker
 
   def perform(email, fan_date, nights)
     hydra = Typhoeus::Hydra.hydra
-    
-    requests = 
+
+    requests =
       all_countries_from_api('name_ru', 'iso2').map do |country_to|
-        [country_to[0]] << 
-          hydra.queue(
-            flights_and_nights_request(
-              'Moscow', country_to[1], fan_date, fan_date)).last
-    end
+        [country_to[0]] <<
+        hydra.queue(
+          flights_and_nights_request(
+            'Moscow', country_to[1], fan_date, fan_date)).last
+      end
 
     hydra.run
 
@@ -20,9 +20,10 @@ class TestWorker
         email,
         fan_date,
         nights,
-        parse_and_filter_fan_requests(
-          requests,
-          nights))
+        get_countries_from_requests(
+          parse_and_filter_fan_requests(
+            requests,
+            nights)))
   end
 
   private
@@ -44,6 +45,10 @@ class TestWorker
       response = country_request[1].response
       (response.success? &&
         JSON.parse(response.body).first[1].include?(nights.to_i))
-    end.map { |country_request| country_request[0] }
+    end
+  end
+
+  def get_countries_from_requests(requests)
+    requests.map { |country_request| country_request[0] }
   end
 end

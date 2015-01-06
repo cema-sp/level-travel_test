@@ -60,7 +60,7 @@ RSpec.describe SecondTestController, type: :controller do
                nights: nights,
                email: email
         end
-        
+
         it 'calls Sidekiq worker' do
           expect(TestWorker)
             .to receive(:perform_async)
