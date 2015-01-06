@@ -1,13 +1,17 @@
 Feature: Second Test
-  In order to get countries list on email
+  In order to get email with countries list
   As a user
   I use second test feature
 
+  Background:
+    Given body of 'countries' response from fixture 'responses'
+    And available nights for selected date:
+      | Country | Nights |  
+      | RU      | 5,6    |  
+      | EG      | 5,7    |  
+      | TR      | 7      |  
+
   Scenario: Fill and send countries request
-    Given avaliable countries for '2014-12-30' and '7' nights are:
-      | Country |  
-      | Egypt   |  
-      | Turkey  |  
     When I visit '/second' path
     And I enter 's.a.pisarev@gmail.com' in 'email' field
     And I enter '2014-12-30' in 'date' field
