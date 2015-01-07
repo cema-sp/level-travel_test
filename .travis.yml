@@ -6,7 +6,8 @@ rvm:
   - 2.0.0
   - 1.9.3
 before_install:
-  - rm -f Gemfile.lock  #  in order of windows/linux compability
+  - rm -f Gemfile.lock  # in order of windows/linux compability
+  - export ON_TRAVIS=true  # flag for Travis-CI  
 notifications:
   email: false
 matrix:
