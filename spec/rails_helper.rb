@@ -7,7 +7,7 @@ require 'rspec/rails'
 require 'capybara/rails'
 require 'webmock/rspec'
 require 'sidekiq/testing'
-require 'pry'
+require 'pry' unless ENV['ON_TRAVIS']
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
