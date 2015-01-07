@@ -91,6 +91,7 @@ group :test do
   gem 'rake'
   # Code coverage
   gem 'simplecov', require: false
+  gem 'coveralls', require: false
 end
 
 group :production do
