@@ -2,12 +2,14 @@
 # require "#{File.dirname(__FILE__)}/../../step_definitions/common_steps.rb"
 
 Given(/^It is '(\d+)\-(\d+)\-(\d+)'$/) do |year, month, day|
+  fake_date = Date.parse("#{year}-#{month}-#{day}")
+
   allow(Date)
     .to receive(:today)
-    .and_return(Date.parse("#{year}-#{month}-#{day}"))
+    .and_return(fake_date)
 
-  @start_date = Date.today.strftime('%-d.%-m.%Y')
-  @end_date = (Date.today + 31).strftime('%-d.%-m.%Y')
+  @start_date = fake_date.strftime('%-d.%-m.%Y')
+  @end_date = (fake_date + 31).strftime('%-d.%-m.%Y')
 end
 
 Given(/^nights for selected country in f&n API response are:$/) do |table|
@@ -21,10 +23,25 @@ Given(/^nights for selected country in f&n API response are:$/) do |table|
     Typhoeus::Response.new(code: 200, body: fan_response_body_hash.to_json)
 end
 
+When(/^to run first test (.+)$/) do |next_step_name|
+  @fan_request =
+    stub_typhoeus_request(
+      flights_and_nights_request(
+        @params[:from_city],
+        @params[:to_country],
+        @start_date,
+        @end_date),
+      @fan_response)
+
+  step next_step_name
+end
+
 Then(/^I see the proper info$/) do
-  expect(page).to have_content("#{@start_date} - #{@end_date}")
-  expect(page).to have_content(@params[:from_city])
-  expect(page).to have_content(@params[:to_country])
+  ["#{@start_date} - #{@end_date}",
+   @params[:from_city],
+   @params[:to_country]].each do |content|
+    expect(page).to have_content(content)
+  end
 end
 
 Then(/^I see the proper calendar table:$/) do |table|
@@ -43,17 +60,17 @@ Then(/^I see the proper calendar table:$/) do |table|
     tmp_row.clear
   end
 
-  step 'with proper thead'
-  step 'with proper tbody'
+  step 'I see proper thead'
+  step 'I see proper tbody'
 end
 
-Then(/with proper thead/) do
+Then(/^I see proper thead$/) do
   %w(Пн Вт Ср Чт Пт Сб Вс).each do |dow|
     expect(page).to have_selector('table thead th', text: dow)
   end
 end
 
-Then(/with proper tbody/) do
+Then(/^I see proper tbody$/) do
   @table_data.each_with_index do |table_row, row_index|
     table_row.each_with_index do |table_cell, cell_index|
       case table_cell

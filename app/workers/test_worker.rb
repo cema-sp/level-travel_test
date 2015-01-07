@@ -15,15 +15,12 @@ class TestWorker
 
     hydra.run
 
+    matching_countries =
+      get_countries_from_requests(
+        parse_and_filter_fan_requests(requests, nights))
+
     SecondTestMailer.delay
-      .countries_email(
-        email,
-        fan_date,
-        nights,
-        get_countries_from_requests(
-          parse_and_filter_fan_requests(
-            requests,
-            nights)))
+      .countries_email(email, fan_date, nights, matching_countries)
   end
 
   private

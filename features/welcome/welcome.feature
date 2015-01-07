@@ -5,6 +5,7 @@ Feature: Welcome
 
   Scenario: Browse welcome page
     When I visit '/' path
-    Then I see the proper index page
-    And I see '/first' link
-    And I see '/second' link
+    Then I see the proper title
+    And I see author email
+    And I see link to '/first'
+    And I see link to '/second'

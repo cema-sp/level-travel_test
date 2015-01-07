@@ -2,45 +2,35 @@ class FirstTestController < ApplicationController
   include LevelTravelApiHelper
 
   def index
-    all_cities_request, all_countries_request =
-      level_travel_api_request('references', 'cities'),
-      level_travel_api_request('references', 'countries')
+    requests =
+      [[level_travel_api_request('references', 'cities'), 'name_ru', 'name_en'],
+       [level_travel_api_request('references', 'countries'), 'name_ru', 'iso2']]
 
     hydra = Typhoeus::Hydra.hydra
-    hydra.queue(all_cities_request)
-    hydra.queue(all_countries_request)
+
+    requests.each do |request, *_keys|
+      hydra.queue(request)
+    end
 
     hydra.run
 
-    @from_cities, @to_countries = [], []
-
-    @from_cities =
-      parse_json_references_response(
-        all_cities_request.response,
-        'name_ru', 'name_en').to_a if all_cities_request.response.success?
-
-    @to_countries =
-      parse_json_references_response(
-        all_countries_request.response,
-        'name_ru', 'iso2').to_a if all_countries_request.response.success?
+    @from_cities, @to_countries =
+      requests.map do |request, *keys|
+        # rubocop:disable Style/MultilineTernaryOperator
+        request.response.success? ?
+          parse_json_references_response(request.response, *keys).to_a : []
+        # rubocop:enable Style/MultilineTernaryOperator
+      end
   end
 
   def show
     @from_city, @to_country = show_params[:from_city], show_params[:to_country]
-
-    start_d = Date.today
-    end_d = start_d + 31
-
-    @start_date = start_d.strftime('%-d.%-m.%Y')
-    @end_date = end_d.strftime('%-d.%-m.%Y')
+    @start_date = (start_d = Date.today).strftime('%-d.%-m.%Y')
+    @end_date = (start_d + 31).strftime('%-d.%-m.%Y')
 
     fan_response =
-      flights_and_nights_request(
-        @from_city,
-        @to_country,
-        @start_date,
-        @end_date)
-      .run
+      flights_and_nights_request(@from_city, @to_country,
+                                 @start_date, @end_date).run
 
     @fan_hash = (fan_response.success? ? JSON.parse(fan_response.body) : {})
   end
