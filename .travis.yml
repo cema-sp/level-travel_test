@@ -8,8 +8,11 @@ rvm:
   - 1.9.3
 before_install:
   - rm -f Gemfile.lock  # in order of windows/linux compability
-  - export ON_TRAVIS=true  # flag for Travis-CI  
 bundler_args: --without production
+cache: bundler
+env:
+  global:
+    - ON_TRAVIS=true # flag for Travis-CI
 matrix:
   allow_failures:
     - rvm: ruby-head
