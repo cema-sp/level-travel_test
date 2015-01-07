@@ -20,3 +20,6 @@ cmd.lnk
 
 # Ignore temporary files
 /tmp_*
+
+# Ignore coverage files
+/coverage

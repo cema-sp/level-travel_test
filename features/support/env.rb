@@ -1,3 +1,4 @@
+require 'simplecov'
 require 'cucumber/rails'
 require 'pry'
 require 'webmock/cucumber'
