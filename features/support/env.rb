@@ -1,6 +1,6 @@
 require 'simplecov'
 require 'cucumber/rails'
-require 'pry'
+require 'pry' unless ENV['ON_TRAVIS']
 require 'webmock/cucumber'
 require 'cucumber/rspec/doubles'
 require 'sidekiq/testing'
