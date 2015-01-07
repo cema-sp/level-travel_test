@@ -1,9 +1,16 @@
 language: ruby
 rvm:
+  - ruby-head
   - 2.2.0
-  - 2.1.5
+  - 2.1
   - 2.0.0
+  - 1.9.3
 before_install:
-  - rm -f Gemfile.lock
+  - rm -f Gemfile.lock  #  in order of windows/linux compability
 notifications:
   email: false
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+    - rvm: 1.9.3
+  fast_finish: true
