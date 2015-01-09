@@ -1,23 +1,21 @@
 <div class="ui centered grid">
-  <div class="row">
-    <div class="six wide column">
-      <h1>Первое задание</h1>
-      
-      <%= form_tag first_path, class: 'ui form' do %>
-        <div class="field">
-          <%= label_tag 'from_city', 'Город вылета:' %>
-          <%= select_tag 'from_city', 
-            options_for_select(@from_cities, 'Moscow'),
-            disabled: false %>
-        </div>
+  <div class="six wide column">
+    <h1>Первое задание</h1>
+    
+    <%= form_tag first_path, class: 'ui form' do %>
+      <div class="field">
+        <%= label_tag 'from_city', 'Город вылета:' %>
+        <%= select_tag 'from_city', 
+          options_for_select(@from_cities, 'Moscow'),
+          disabled: false %>
+      </div>
 
-        <div class="field">
-          <%= label_tag 'to_country', 'Страна назначения:' %>
-          <%= select_tag 'to_country', options_for_select(@to_countries) %>
-        </div>
+      <div class="field">
+        <%= label_tag 'to_country', 'Страна назначения:' %>
+        <%= select_tag 'to_country', options_for_select(@to_countries) %>
+      </div>
 
-        <%= submit_tag 'Показать', class: 'ui primary button' %>
-      <% end %>
-    </div>
+      <%= submit_tag 'Показать', class: 'ui primary button' %>
+    <% end %>
   </div>
 </div>

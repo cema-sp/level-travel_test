@@ -1,11 +1,6 @@
-<h1>Таблица туров для</h1>
 <h2>
-  Периода: <%= "#{@start_date} - #{@end_date}" %>
-</h2>
-<h2>
-  Из города: <%= @from_city %>
-<h2>
-  В страну: <%= @to_country %>
+  Таблица туров для на  <%= "#{@start_date} - #{@end_date}" %> 
+  из <%= @from_city %> в <%= @to_country %>
 </h2>
 
 <%= flights_and_nights_calendar(@start_date, @end_date, @fan_hash) %>

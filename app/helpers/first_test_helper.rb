@@ -60,7 +60,7 @@ module FirstTestHelper
       nights = fan_hash[date.strftime('%Y-%m-%d')]
       nights_count = nights.nil? ? 0 : nights.size
 
-      content_tag :td, class: cell_bg_color(max_nights, nights_count) do
+      content_tag :td, style: cell_bg_color(max_nights, nights_count) do
         if nights
           (content_tag :strong, date.day) +
             (content_tag :p, nights.join(', '))
@@ -76,7 +76,7 @@ module FirstTestHelper
   end
 
   def flights_and_nights_calendar_tbody_empty_cell
-    content_tag :td, class: cell_bg_color(1, 0) do
+    content_tag :td, style: cell_bg_color(1, 0) do
       content_tag :strong, ' '
     end
   end

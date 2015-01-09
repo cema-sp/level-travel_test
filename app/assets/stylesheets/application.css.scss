@@ -10,12 +10,16 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= require semantic-ui-1.0
+ * require semantic-ui
  *= require_tree .
  *= require_self
  */
 
+ @import "semantic-ui";
+
 #calendar td {
   border-collapse: collapse;
   border: 1px solid #2E2E2E;
+  text-align: left;
+  vertical-align: top;
 }
