@@ -13,9 +13,9 @@ before_install:
   - rm -f Gemfile.lock  # in order of windows/linux compability
 bundler_args: --without development production
 cache: bundler
-# env:
-#   global:
-#     - ON_TRAVIS=true # flag for Travis-CI
+env:
+  global:
+    - JRUBY_OPTS="-Xcext.enabled=true"
 matrix:
   allow_failures:
     - rvm: ruby-head

@@ -42,6 +42,9 @@ gem 'typhoeus'
 # Background workers
 gem 'sidekiq'
 
+# Markdown processing
+gem 'kramdown'
+
 group :development do
   # better IRB and better print
   gem 'pry'
