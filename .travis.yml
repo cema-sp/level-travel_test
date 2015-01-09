@@ -5,18 +5,24 @@ rvm:
   - 2.2.0
   - 2.1
   - 2.0.0
-  - 1.9.3
+  - jruby-19mode
+  - jruby
+  - rbx
+  - rbx-2
 before_install:
   - rm -f Gemfile.lock  # in order of windows/linux compability
 bundler_args: --without development production
 cache: bundler
-env:
-  global:
-    - ON_TRAVIS=true # flag for Travis-CI
+# env:
+#   global:
+#     - ON_TRAVIS=true # flag for Travis-CI
 matrix:
   allow_failures:
     - rvm: ruby-head
-    - rvm: 1.9.3
+    - rvm: jruby-19mode
+    - rvm: jruby
+    - rvm: rbx
+    - rvm: rbx-2
   fast_finish: true
 notifications:
   email: false
