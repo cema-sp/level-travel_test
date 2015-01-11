@@ -4,14 +4,10 @@ module Kramdown
     class Html
       alias_method :convert_img_original, :convert_img
       def convert_img(el, indent)
-        # extend ActionView::Helpers::AssetUrlHelper
-        # binding.pry
-        if el.attr["src"].include?('app/assets/images/') &&
-          (matching = el.attr["src"].match(/\w+\.\w+$/))
-
+        matching = el.attr["src"].match(/app\/assets\/images\/(.*\w+\.\w+$)/)
+        if (matching)
           el.attr["src"] =
-            ActionController::Base.helpers.asset_path(matching[0])
-          # el.attr["src"] = image_path(matching[0])
+            ActionController::Base.helpers.asset_path(matching[1])
         end
         convert_img_original(el, indent)
       end
