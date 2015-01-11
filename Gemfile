@@ -80,7 +80,7 @@ group :development, :test do
   # end
 
   # Use sqlite3 as the database for Active Record
-  gem 'sqlite3'
+  # gem 'sqlite3'
 end
 
 group :test do
@@ -100,8 +100,8 @@ group :test do
 end
 
 group :production do
-  gem 'pg'
-  gem 'rails_12factor'
+  # gem 'pg'
+  # gem 'rails_12factor'
 
   # Unicorn application server
   gem 'unicorn'
