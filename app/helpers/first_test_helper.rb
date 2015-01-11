@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module FirstTestHelper
   def flights_and_nights_calendar(start_date, end_date, fan_hash)
     days_of_week = %w(Пн Вт Ср Чт Пт Сб Вс)
