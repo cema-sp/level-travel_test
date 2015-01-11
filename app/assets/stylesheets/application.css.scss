@@ -15,11 +15,26 @@
  *= require_self
  */
 
- @import "semantic-ui";
+@import "semantic-ui";
 
 #calendar td {
   border-collapse: collapse;
   border: 1px solid #2E2E2E;
   text-align: left;
   vertical-align: top;
+}
+
+img {
+  @extend .ui;
+  @extend .bordered;
+  @extend .image;
+}
+
+table {
+  @extend .ui;
+  @extend .very;
+  @extend .basic;
+  @extend .celled;
+  @extend .collapsing;
+  @extend .table;
 }

@@ -1,12 +1,13 @@
+require Rails.root.join('lib/kramdown_converter_html')
+
 class WelcomeController < ApplicationController
   INDEX_PAGE_MD_FILE = 'README.md'
 
   def index
-    # File.read(Rails.root.join(INDEX_PAGE_MD_FILE))
-    kramdown_document = 
+    @file_content_html = 
       Kramdown::Document.new(
         File.read(
-          Rails.root.join(INDEX_PAGE_MD_FILE)))
-    render inline: kramdown_document.to_html
+          Rails.root.join(INDEX_PAGE_MD_FILE))
+      ).to_html
   end
 end
