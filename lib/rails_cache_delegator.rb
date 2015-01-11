@@ -1,5 +1,5 @@
 class RailsCacheDelegator < SimpleDelegator
-  EXPIRATION_TIME = 5
+  EXPIRATION_TIME ||= 5
 
   def get(request)
     read(request.hash)

@@ -6,6 +6,6 @@ SimpleCov.profiles.define 'rails_custom' do
   add_group 'Workers', 'app/workers'
 end
 
-SimpleCov.formatter = Coveralls::SimpleCov::Formatter if ENV['ON_TRAVIS']
+SimpleCov.formatter = Coveralls::SimpleCov::Formatter if ENV['TRAVIS']
 
 SimpleCov.start 'rails_custom'
