@@ -26,14 +26,14 @@ RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   # config.infer_spec_type_from_file_location!
   config.order = :random
-  config.fixture_path = "#{::Rails.root}/spec/fixtures"
+  # config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
-  require 'database_cleaner'
+  # require 'database_cleaner'
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  config.use_transactional_fixtures = true
+  # config.use_transactional_fixtures = true
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
@@ -48,19 +48,19 @@ RSpec.configure do |config|
   #
   # The different available types are documented in the features, such as in
   # https://relishapp.com/rspec/rspec-rails/docs
-  config.before(:suite) do
-    # choose ActiveRecord best strategy
-    DatabaseCleaner.strategy = :transaction
-    # empty database
-    DatabaseCleaner.clean_with(:truncation)
-  end
+  # config.before(:suite) do
+  #   # choose ActiveRecord best strategy
+  #   DatabaseCleaner.strategy = :transaction
+  #   # empty database
+  #   DatabaseCleaner.clean_with(:truncation)
+  # end
 
-  # Empty database for each example
-  config.around(:each) do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
-  end
+  # # Empty database for each example
+  # config.around(:each) do |example|
+  #   DatabaseCleaner.cleaning do
+  #     example.run
+  #   end
+  # end
 
   # Using Capybara DSL in specs
   config.include Capybara::DSL
