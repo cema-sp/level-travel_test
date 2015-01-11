@@ -18,12 +18,12 @@ Feature: First Test
     When I visit '/first' path
     And I choose 'Москва, Moscow' from 'from_city' dropdown list
     And I choose 'Египет, EG' from 'to_country' dropdown list
-    # And to run first test I click 'Показать' button
-    # Then I see the proper info
-    # And I see the proper calendar table:
-    #   | Mo | Tu    | We       | Th        | Fr | Sa     | Su |  
-    #   |    | 2 (7) | 3 (6,10) | 4         | 5  | 6 (10) | 7  |  
-    #   | 8  | 9     | 10       | 11 (7, 8) | 12 | 13     | 14 |  
-    #   | 15 | 16    | 17       | 18        | 19 | 20     | 21 |  
-    #   | 22 | 23    | 24       | 25        | 26 | 27     | 28 |  
-    #   | 29 | 30    | 31       |           |    |        |    |  
+    And to run first test I click 'Показать' button
+    Then I see the proper info
+    And I see the proper calendar table:
+      | Mo | Tu    | We       | Th        | Fr | Sa     | Su |  
+      |    | 2 (7) | 3 (6,10) | 4         | 5  | 6 (10) | 7  |  
+      | 8  | 9     | 10       | 11 (7, 8) | 12 | 13     | 14 |  
+      | 15 | 16    | 17       | 18        | 19 | 20     | 21 |  
+      | 22 | 23    | 24       | 25        | 26 | 27     | 28 |  
+      | 29 | 30    | 31       |           |    |        |    |  

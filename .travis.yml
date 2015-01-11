@@ -12,6 +12,7 @@ rvm:
 before_install:
   - rm -f Gemfile.lock  # in order of windows/linux compability
 bundler_args: --without development production
+script: bundle exec rake spec
 cache: bundler
 env:
   global:
